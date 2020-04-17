@@ -30,7 +30,7 @@ public class ParkingViolationProcessor {
      *
      * @return total fine per capita
      */
-    private Map<String, Double> getTotalFinesPerCapita(){
+    public Map<String, Double> getTotalFinesPerCapita(){
         return null;
     }
 }
