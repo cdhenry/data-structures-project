@@ -25,10 +25,16 @@ public class PopulationProcessor {
     }
 
     /**
-     *
      * @return total population
      */
-    public long getTotalPopulation() {
+    public int getTotalPopulation() {
         return 0;
+    }
+
+    /**
+     * @return list of all populations
+     */
+    public List<Population> getPopulations() {
+        return populations;
     }
 }
