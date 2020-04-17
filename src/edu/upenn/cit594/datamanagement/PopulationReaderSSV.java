@@ -38,7 +38,7 @@ public class PopulationReaderSSV {
 
             while (in.hasNextLine()) {
                 String population = in.nextLine();
-                String[] populationArray = population.split(SPACE);
+                String[] populationArray = population.trim().split(SPACE);
 
                 String zipCode = populationArray[0];
                 int populationCount = Integer.parseInt(populationArray[1]);
