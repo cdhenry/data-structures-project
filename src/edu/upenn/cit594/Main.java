@@ -1,6 +1,11 @@
 package edu.upenn.cit594;
 
+import edu.upenn.cit594.datamanagement.*;
 import edu.upenn.cit594.logging.Logger;
+import edu.upenn.cit594.processor.ParkingViolationProcessor;
+import edu.upenn.cit594.processor.PopulationProcessor;
+import edu.upenn.cit594.processor.PropertyValueProcessor;
+import edu.upenn.cit594.ui.CommandLineUserInterface;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,13 +55,27 @@ public class Main {
 
             // create the objects and their relationships
             Logger.init(logFile);
-//            Reader reader = new CSVFileReader(filename);
-//            Processor processor = new Processor(reader);
-//            CommandLineUserInterface ui = new CommandLineUserInterface(processor);
-//
-//            ui.start();
+
+            // create readers
+            ParkingViolationReader parkingViolationReader = isParkingViolationsJSON ?
+                    new ParkingViolationReaderJSON(parkingViolationsFile) :
+                    new ParkingViolationReaderCSV(parkingViolationsFile);
+            PropertyValueReaderCSV propertyValueReader = new PropertyValueReaderCSV(propertyValuesFile);
+            PopulationReaderSSV populationReader = new PopulationReaderSSV(populationFile);
+
+            // create processors
+            ParkingViolationProcessor parkingViolationProcessor = new ParkingViolationProcessor(parkingViolationReader);
+            PropertyValueProcessor propertyValueProcessor = new PropertyValueProcessor(propertyValueReader);
+            PopulationProcessor populationProcessor = new PopulationProcessor(populationReader);
+
+            // create cli
+            CommandLineUserInterface ui = new CommandLineUserInterface(parkingViolationProcessor, populationProcessor,
+                    propertyValueProcessor);
+
+            ui.start();
         } catch (FileNotFoundException e) {
-            System.out.println("tweet file and state file must exist and must be readable");
+            System.out.println("parking violation file, property value file, and population file must exist " +
+                    "and must be readable");
             System.exit(0);
         }
     }
