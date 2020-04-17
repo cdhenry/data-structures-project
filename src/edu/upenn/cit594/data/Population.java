@@ -8,13 +8,13 @@ package edu.upenn.cit594.data;
  */
 public class Population {
     String zipCode;
-    long population;
+    int population;
 
     /**
      * @param zipCode
      * @param population
      */
-    public Population(String zipCode, long population) {
+    public Population(String zipCode, int population) {
         this.zipCode = zipCode;
         this.population = population;
     }
