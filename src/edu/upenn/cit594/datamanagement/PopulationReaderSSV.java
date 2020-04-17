@@ -40,6 +40,10 @@ public class PopulationReaderSSV {
                 String population = in.nextLine();
                 String[] populationArray = population.split(SPACE);
 
+                String zipCode = populationArray[0];
+                int populationCount = Integer.parseInt(populationArray[1]);
+
+                populations.add(new Population(zipCode, populationCount));
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);
