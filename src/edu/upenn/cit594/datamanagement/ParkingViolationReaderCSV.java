@@ -3,7 +3,9 @@ package edu.upenn.cit594.datamanagement;
 import edu.upenn.cit594.data.ParkingViolation;
 
 import java.io.FileReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -36,6 +38,17 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
                 String parkingViolation = in.nextLine();
                 String[] parkingViolationArray = parkingViolation.split(COMMA);
 
+                String timeString = (String) parkingViolationArray[0];
+                Date timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeString);
+                double fine = Double.parseDouble(parkingViolationArray[1]);
+                String violation = parkingViolationArray[2];
+                String plateId = parkingViolationArray[3];
+                String state = parkingViolationArray[4];
+                String ticketNumber = parkingViolationArray[5];
+                String zipCode = parkingViolationArray[6];
+
+                parkingViolations.add(new ParkingViolation(timeStamp, fine, violation, plateId, state, ticketNumber,
+                        zipCode));
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);
