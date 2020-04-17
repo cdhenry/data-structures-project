@@ -35,11 +35,29 @@ public class PropertyValueReaderCSV {
         List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
 
         try (Scanner in = new Scanner(file)) {
+            String headers = in.nextLine();
+            String[] headerArray = headers.split(COMMA);
+            int marketValueIndex = -1, totalLivableAreaIndex = -1, zipCodeIndex = -1;
+
+            for (int i=0; i<headerArray.length; i++) {
+                if (headerArray[i].equals("market_value")) {
+                    marketValueIndex = i;
+                } else if (headerArray[i].equals("total_livable_area")) {
+                    totalLivableAreaIndex = i;
+                } else if (headerArray[i].equals("zip_code")) {
+                    zipCodeIndex = i;
+                }
+            }
 
             while (in.hasNextLine()) {
                 String propertyValue = in.nextLine();
                 String[] propertyValueArray = propertyValue.split(COMMA);
 
+                double marketValue = Double.parseDouble(propertyValueArray[marketValueIndex]);
+                double totalLivableArea = Double.parseDouble(propertyValueArray[totalLivableAreaIndex]);
+                String zipCode = propertyValueArray[zipCodeIndex];
+
+                propertyValues.add(new PropertyValue(marketValue, totalLivableArea, zipCode));
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);
