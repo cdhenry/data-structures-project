@@ -4,6 +4,7 @@ import edu.upenn.cit594.processor.ParkingViolationProcessor;
 import edu.upenn.cit594.processor.PopulationProcessor;
 import edu.upenn.cit594.processor.PropertyValueProcessor;
 
+import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -41,15 +42,28 @@ public class CommandLineUserInterface {
     public void start() {
         int choice = -1;
 
-        while (choice != 0) {
-            printInstructions();
-            choice = in.nextInt();
-            performAction(choice);
-        }
+        do {
+            try {
+                while (choice != 0) {
+                    printInstructions();
+                    choice = in.nextInt();
+                    performAction(choice);
+                }
+                break;
+            }
+            catch (InputMismatchException e) {
+                printError();
+            }
+        } while(true);
 
         in.close();
     }
 
+    /**
+     * Makes calls to print functions based on user input
+     *
+     * @param choice integer value entered by user
+     */
     private void performAction(int choice){
         switch (choice) {
             case 0:
@@ -58,11 +72,11 @@ public class CommandLineUserInterface {
                 break;
             case 2: printTotalFinesPerCapita();
                 break;
-            case 3: printAverageResidentialMarketValue();
+            case 3: printAverageResidentialMarketValue(getZipCode());
                 break;
-            case 4: printAverageResidentialTotalLivableArea();
+            case 4: printAverageResidentialTotalLivableArea(getZipCode());
                 break;
-            case 5: printTotalResidentialMarketValuePerCapita();
+            case 5: printTotalResidentialMarketValuePerCapita(getZipCode());
                 break;
             case 6: printCUSTOM();
                 break;
@@ -71,6 +85,30 @@ public class CommandLineUserInterface {
         }
     }
 
+    /**
+     * Prompt user for zip code
+     * @return zip code as string
+     */
+    private String getZipCode(){
+        String zipCode;
+
+        do {
+            try {
+                System.out.print("Enter zip code: ");
+                zipCode = Integer.toString(in.nextInt());
+                break;
+            }
+            catch (InputMismatchException e) {
+                printError();
+            }
+        } while(true);
+
+        return zipCode;
+    }
+
+    /**
+     * Prints choices to command line
+     */
     private void printInstructions(){
         System.out.println("Choose from the following options.");
         System.out.println("Enter:");
@@ -82,24 +120,46 @@ public class CommandLineUserInterface {
         System.out.println("\t6 for // TODO: CUSTOM FEATURE");
     }
 
+    /**
+     * Prints total population for all zip codes
+     */
     private void printTotalPopulation() {
-
+        System.out.println(populationProcessor.getTotalPopulation());
     }
 
+    /**
+     * Prints total fines per capita for each zip code
+     */
     private void printTotalFinesPerCapita() {
+        Map<String, Double> totalFinesPerCapita = parkingViolationProcessor.getTotalFinesPerCapita();
 
+        for (Map.Entry<String, Double> entry : totalFinesPerCapita.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            System.out.printf("%s %04.4f\n", key, value);
+        }
     }
 
-    private void printAverageResidentialMarketValue() {
-
+    /**
+     * Prints average residential market value for provided zip code
+     */
+    private void printAverageResidentialMarketValue(String zipCode) {
+        System.out.printf("%04.4f\n", propertyValueProcessor.getAverageResidentialMarketValue(zipCode));
     }
 
-    private void printAverageResidentialTotalLivableArea() {
-
+    /**
+     * Prints average residential total livable area for provided zip code
+     */
+    private void printAverageResidentialTotalLivableArea(String zipCode) {
+        System.out.printf("%d\n", (int) propertyValueProcessor.getAverageResidentialTotalLivableArea(zipCode));
     }
 
-    private void printTotalResidentialMarketValuePerCapita() {
-
+    /**
+     * Prints average residential market value per capita for provided zip code
+     */
+    private void printTotalResidentialMarketValuePerCapita(String zipCode) {
+        System.out.printf("%d\n", (int) propertyValueProcessor.getTotalResidentialMarketValuePerCapita(zipCode,
+                populationProcessor.getPopulations()));
     }
 
     // TODO: CUSTOM FEATURE
@@ -108,6 +168,6 @@ public class CommandLineUserInterface {
     }
 
     private void printError() {
-
+        System.out.println("Invalid Input, please try again.");
     }
 }
