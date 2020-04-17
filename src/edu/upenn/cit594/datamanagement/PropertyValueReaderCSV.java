@@ -14,7 +14,7 @@ import java.util.Scanner;
  *
  */
 public class PropertyValueReaderCSV {
-    private static final String COMMA = ",";
+    private static final String COMMA = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
     protected FileReader file;
 
     /**
@@ -36,10 +36,10 @@ public class PropertyValueReaderCSV {
 
         try (Scanner in = new Scanner(file)) {
             String headers = in.nextLine();
-            String[] headerArray = headers.split(COMMA);
+            String[] headerArray = headers.trim().split(COMMA);
             int marketValueIndex = -1, totalLivableAreaIndex = -1, zipCodeIndex = -1;
 
-            for (int i=0; i<headerArray.length; i++) {
+            for (int i = 0; i < headerArray.length; i++) {
                 if (headerArray[i].equals("market_value")) {
                     marketValueIndex = i;
                 } else if (headerArray[i].equals("total_livable_area")) {
@@ -51,13 +51,16 @@ public class PropertyValueReaderCSV {
 
             while (in.hasNextLine()) {
                 String propertyValue = in.nextLine();
-                String[] propertyValueArray = propertyValue.split(COMMA);
+                String[] propertyValueArray = propertyValue.trim().split(COMMA);
 
-                double marketValue = Double.parseDouble(propertyValueArray[marketValueIndex]);
-                double totalLivableArea = Double.parseDouble(propertyValueArray[totalLivableAreaIndex]);
+                String marketValue = propertyValueArray[marketValueIndex];
+                String totalLivableArea = propertyValueArray[totalLivableAreaIndex];
                 String zipCode = propertyValueArray[zipCodeIndex];
 
-                propertyValues.add(new PropertyValue(marketValue, totalLivableArea, zipCode));
+                if(marketValue.length() > 0 && totalLivableArea.length() > 0 && zipCode.length() > 0) {
+                    propertyValues.add(new PropertyValue(Double.parseDouble(marketValue),
+                            Double.parseDouble(totalLivableArea), zipCode));
+                }
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);

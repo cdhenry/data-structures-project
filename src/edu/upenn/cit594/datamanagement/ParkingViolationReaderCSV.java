@@ -16,7 +16,7 @@ import java.util.Scanner;
  *
  */
 public class ParkingViolationReaderCSV implements ParkingViolationReader {
-    private static final String COMMA = ",";
+    private static final String COMMA = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
     protected FileReader file;
 
     /**
@@ -36,7 +36,7 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
 
             while (in.hasNextLine()) {
                 String parkingViolation = in.nextLine();
-                String[] parkingViolationArray = parkingViolation.split(COMMA);
+                String[] parkingViolationArray = parkingViolation.trim().split(COMMA);
 
                 String timeString = (String) parkingViolationArray[0];
                 Date timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeString);

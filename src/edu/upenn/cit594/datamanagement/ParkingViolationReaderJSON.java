@@ -48,17 +48,17 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
                 // get the next JSON object
                 JSONObject parkingViolation = (JSONObject) o;
 
-                int ticketNumber = (int) parkingViolation.get("ticket_number");
+                long ticketNumber = (long) parkingViolation.get("ticket_number");
                 String plateId = (String) parkingViolation.get("plate_id");
                 String timeString = (String) parkingViolation.get("date");
                 Date timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeString);
                 String zipCode = (String) parkingViolation.get("zip_code");
                 String violation = (String) parkingViolation.get("violation");
-                double fine = (Double) parkingViolation.get("fine");
+                long fine = (long) parkingViolation.get("fine");
                 String state = (String) parkingViolation.get("state");
 
-                parkingViolations.add(new ParkingViolation(timeStamp, fine, violation, plateId, state,
-                        Integer.toString(ticketNumber), zipCode));
+                parkingViolations.add(new ParkingViolation(timeStamp, new Long(fine).doubleValue(), violation,
+                        plateId, state, Long.toString(ticketNumber), zipCode));
             }
         } catch (IOException | ParseException | java.text.ParseException e) {
             e.printStackTrace();
