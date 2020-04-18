@@ -1,11 +1,13 @@
 package edu.upenn.cit594.datamanagement;
 
+import edu.upenn.cit594.data.CommonConstant;
 import edu.upenn.cit594.data.PropertyValue;
 import edu.upenn.cit594.logging.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
+import java.util.regex.Matcher;
 
 /**
  * Uses a scanner to parse a comma separated text file for property value data
@@ -14,7 +16,6 @@ import java.util.*;
  */
 public class PropertyValueReaderCSV {
     private static final String FILE_ERR_MSG = "property value file must exist and be readable";
-    private static final String COMMA = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
     protected String filename;
 
     /**
@@ -40,7 +41,7 @@ public class PropertyValueReaderCSV {
             Scanner in = new Scanner(file);
 
             String headers = in.nextLine();
-            String[] headerArray = headers.trim().split(COMMA);
+            String[] headerArray = headers.trim().split(CommonConstant.COMMA_REGEX);
             int marketValueIndex = -1, totalLivableAreaIndex = -1, zipCodeIndex = -1, id = -1;
 
             for (int i = 0; i < headerArray.length; i++) {
@@ -55,19 +56,26 @@ public class PropertyValueReaderCSV {
 
             while (in.hasNextLine()) {
                 String propertyValue = in.nextLine();
-                String[] propertyValueArray = propertyValue.trim().split(COMMA);
+                String[] propertyValueArray = propertyValue.trim().split(CommonConstant.COMMA_REGEX);
+
+                if (propertyValueArray.length != headerArray.length) {
+                    continue;
+                }
 
                 String marketValue = propertyValueArray[marketValueIndex].trim();
                 if (marketValue.length() == 0) {
                     continue;
                 }
+
                 String totalLivableArea = propertyValueArray[totalLivableAreaIndex].trim();
                 if (totalLivableArea.length() == 0) {
                     continue;
                 }
+
                 String zipCode = propertyValueArray[zipCodeIndex].trim();
-                if (zipCode.length() > 4) {
-                    zipCode = zipCode.substring(0, 5);
+                Matcher m = CommonConstant.ZIP_CODE_PATTERN.matcher(zipCode);
+                if (m.find()) {
+                    zipCode = m.group();
                 } else {
                     continue;
                 }

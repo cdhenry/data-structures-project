@@ -1,11 +1,13 @@
 package edu.upenn.cit594.datamanagement;
 
+import edu.upenn.cit594.data.CommonConstant;
 import edu.upenn.cit594.data.Population;
 import edu.upenn.cit594.logging.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
+import java.util.regex.Matcher;
 
 /**
  * Uses a scanner to parse a space separated text file for population data
@@ -14,7 +16,6 @@ import java.util.*;
  */
 public class PopulationReaderSSV {
     private static final String FILE_ERR_MSG = "population file must exist and be readable";
-    private static final String SPACE = " ";
     protected String filename;
 
     /**
@@ -41,11 +42,12 @@ public class PopulationReaderSSV {
 
             while (in.hasNextLine()) {
                 String population = in.nextLine();
-                String[] populationArray = population.trim().split(SPACE);
+                String[] populationArray = population.trim().split(CommonConstant.SPACE_REGEX);
 
                 String zipCode = populationArray[0].trim();
-                if (zipCode.length() > 4) {
-                    zipCode = zipCode.substring(0, 5);
+                Matcher m = CommonConstant.ZIP_CODE_PATTERN.matcher(zipCode);
+                if (m.find()) {
+                    zipCode = m.group();
                 } else {
                     continue;
                 }
