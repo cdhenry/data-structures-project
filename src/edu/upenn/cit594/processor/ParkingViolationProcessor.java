@@ -11,9 +11,9 @@ import java.util.*;
  * @author Chris Henry + Tim Chung
  */
 public class ParkingViolationProcessor {
-    ParkingViolationReader parkingViolationReader;
-    List<ParkingViolation> parkingViolations;
-    Map<Integer, List<ParkingViolation>> parkingViolationsByZip;
+    protected ParkingViolationReader parkingViolationReader;
+    protected List<ParkingViolation> parkingViolations;
+    protected Map<Integer, List<ParkingViolation>> parkingViolationsByZip;
 
     /**
      * Constructs a ParkingViolationProcessor to store a set of ParkingViolation objects created by the
@@ -24,7 +24,7 @@ public class ParkingViolationProcessor {
     public ParkingViolationProcessor(ParkingViolationReader parkingViolationReader) {
         this.parkingViolationReader = parkingViolationReader;
         this.parkingViolations = parkingViolationReader.getAllParkingViolations();
-        Map<Integer, List<ParkingViolation>> parkingViolationsByZip = new HashMap<>();
+        this.parkingViolationsByZip = new HashMap<>();
     }
 
     /**
@@ -36,7 +36,7 @@ public class ParkingViolationProcessor {
             for (ParkingViolation violation : parkingViolations) {
                 int zipCode = violation.getZipCode();
                 List<ParkingViolation> violations = parkingViolationsByZip.containsKey(zipCode) ?
-                        parkingViolationsByZip.get(zipCode) : new LinkedList<>();
+                        parkingViolationsByZip.get(zipCode) : new LinkedList<ParkingViolation>();
 
                 violations.add(violation);
                 parkingViolationsByZip.put(zipCode, violations);
@@ -55,7 +55,11 @@ public class ParkingViolationProcessor {
         for (Map.Entry<Integer, Integer> entry : populations.entrySet()) {
             int zipCode = entry.getKey();
             int population = entry.getValue();
-            List<ParkingViolation> violations = parkingViolationsByZip.get(zipCode);
+            List<ParkingViolation> violations = getParkingViolationsByZip().get(zipCode);
+
+            if (violations == null) {
+                continue;
+            }
 
             double totalFines = 0.0;
 

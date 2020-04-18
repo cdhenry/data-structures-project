@@ -13,9 +13,9 @@ import java.util.Map;
  * @author Chris Henry + Tim Chung
  */
 public class PopulationProcessor {
-    PopulationReaderSSV populationReader;
-    List<Population> populationsList;
-    HashMap<Integer, Integer> populationsByZip;
+    protected PopulationReaderSSV populationReader;
+    protected List<Population> populationsList;
+    protected HashMap<Integer, Integer> populationsByZip;
 
     /**
      * Constructs a Population to store a set of Population objects created by the PopulationReader class
