@@ -77,7 +77,7 @@ public class PropertyValueProcessor {
     public double getAverageResidentialTotalLivableArea(int zipCode) {
         List<PropertyValue> properties = propertyValuesByZip.get(zipCode);
 
-        return getAverage(new TotalLivableAreaReducer(), properties.size());
+        return getAverage(new TotalLivableAreaReducer(properties), properties.size());
     }
 
     /**
