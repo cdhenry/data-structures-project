@@ -75,6 +75,8 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
                 String zipCode = parkingViolationArray[6];
                 if (zipCode.length() == 0) {
                     continue;
+                } else {
+                    zipCode = zipCode.substring(0, 5);
                 }
 
                 Date timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeString);
