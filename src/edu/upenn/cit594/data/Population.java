@@ -32,23 +32,23 @@ public class Population { // implements Comparable<Object>, Comparator<Object> {
         return population;
     }
 
-//    @Override
-//    public String toString() {
-//        return zipCode + " " + population;
-//    }
-//
-//    public boolean equals(Object obj) {
-//        if (obj instanceof Population) {
-//            Population other = (Population) obj;
-//            return zipCode == other.zipCode;
-//        }
-//        return false;
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return toString().hashCode();
-//    }
+    @Override
+    public String toString() {
+        return zipCode + " " + population;
+    }
+
+    public boolean equals(Object obj) {
+        if (obj instanceof Population) {
+            Population other = (Population) obj;
+            return zipCode == other.zipCode;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
 //
 //    @Override
 //    public int compare(Object o1, Object o2) {

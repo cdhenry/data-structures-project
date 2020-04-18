@@ -84,23 +84,23 @@ public class ParkingViolation { // implements Comparable<Object>, Comparator<Obj
         return zipCode;
     }
 
-//    @Override
-//    public String toString() {
-//        return id + " " + zipCode;
-//    }
-//
-//    public boolean equals(Object obj) {
-//        if (obj instanceof ParkingViolation) {
-//            ParkingViolation other = (ParkingViolation) obj;
-//            return id == other.id;
-//        }
-//        return false;
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return toString().hashCode();
-//    }
+    @Override
+    public String toString() {
+        return id + " " + zipCode;
+    }
+
+    public boolean equals(Object obj) {
+        if (obj instanceof ParkingViolation) {
+            ParkingViolation other = (ParkingViolation) obj;
+            return id == other.id;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
 //
 //    @Override
 //    public int compare(Object o1, Object o2) {
