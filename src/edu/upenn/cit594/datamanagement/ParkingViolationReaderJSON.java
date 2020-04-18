@@ -1,5 +1,6 @@
 package edu.upenn.cit594.datamanagement;
 
+import edu.upenn.cit594.data.CommonConstant;
 import edu.upenn.cit594.data.ParkingViolation;
 import edu.upenn.cit594.logging.Logger;
 import org.json.simple.JSONArray;
@@ -12,6 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
 
 /**
  * Uses the json.simple library to parse a JSON file into a set of ParkingViolation objects
@@ -62,8 +64,9 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
                 }
 
                 String zipCode = (String) parkingViolation.get("zip_code");
-                if (zipCode.length() > 4) {
-                    zipCode = zipCode.substring(0, 5);
+                Matcher m = CommonConstant.ZIP_CODE_PATTERN.matcher(zipCode);
+                if (m.find()) {
+                    zipCode = m.group();
                 } else {
                     continue;
                 }

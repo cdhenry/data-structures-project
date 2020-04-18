@@ -1,5 +1,6 @@
 package edu.upenn.cit594.datamanagement;
 
+import edu.upenn.cit594.data.CommonConstant;
 import edu.upenn.cit594.data.ParkingViolation;
 import edu.upenn.cit594.logging.Logger;
 
@@ -8,6 +9,7 @@ import java.io.FileReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
 
 /**
  * Uses a scanner to parse a comma separated text file for parking violation data
@@ -17,7 +19,6 @@ import java.util.*;
 public class ParkingViolationReaderCSV implements ParkingViolationReader {
     private static final String FILE_ERR_MSG = "parking violation file must exist and be readable";
     private static final String DATE_PARSE_ERR_MSG = "parking violation date parse error";
-    private static final String COMMA = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
     protected String filename;
 
     /**
@@ -40,7 +41,7 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
 
             while (in.hasNextLine()) {
                 String parkingViolation = in.nextLine();
-                String[] parkingViolationArray = parkingViolation.trim().split(COMMA);
+                String[] parkingViolationArray = parkingViolation.trim().split(CommonConstant.COMMA_REGEX);
 
                 String timeString = parkingViolationArray[0].trim();
                 if (timeString.length() == 0) {
@@ -73,8 +74,9 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
                 }
 
                 String zipCode = parkingViolationArray[6].trim();
-                if (zipCode.length() > 4) {
-                    zipCode = zipCode.substring(0, 5);
+                Matcher m = CommonConstant.ZIP_CODE_PATTERN.matcher(zipCode);
+                if (m.find()) {
+                    zipCode = m.group();
                 } else {
                     continue;
                 }
