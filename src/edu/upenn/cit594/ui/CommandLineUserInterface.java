@@ -24,8 +24,8 @@ public class CommandLineUserInterface {
      * Uses processor classes to deliver the desired information to the user.
      *
      * @param parkingViolationProcessor a parking violation processor
-     * @param populationProcessor a population processor
-     * @param propertyValueProcessor a property value processor
+     * @param populationProcessor       a population processor
+     * @param propertyValueProcessor    a property value processor
      */
     public CommandLineUserInterface(ParkingViolationProcessor parkingViolationProcessor,
                                     PopulationProcessor populationProcessor,
@@ -50,11 +50,10 @@ public class CommandLineUserInterface {
                     performAction(choice);
                 }
                 break;
-            }
-            catch (InputMismatchException e) {
+            } catch (InputMismatchException e) {
                 printError();
             }
-        } while(true);
+        } while (true);
 
         in.close();
     }
@@ -64,32 +63,40 @@ public class CommandLineUserInterface {
      *
      * @param choice integer value entered by user
      */
-    private void performAction(int choice){
+    private void performAction(int choice) {
         switch (choice) {
             case 0:
                 break;
-            case 1: printTotalPopulation();
+            case 1:
+                printTotalPopulation();
                 break;
-            case 2: printTotalFinesPerCapita();
+            case 2:
+                printTotalFinesPerCapita();
                 break;
-            case 3: printAverageResidentialMarketValue(getZipCode());
+            case 3:
+                printAverageResidentialMarketValue(getZipCode());
                 break;
-            case 4: printAverageResidentialTotalLivableArea(getZipCode());
+            case 4:
+                printAverageResidentialTotalLivableArea(getZipCode());
                 break;
-            case 5: printTotalResidentialMarketValuePerCapita(getZipCode());
+            case 5:
+                printTotalResidentialMarketValuePerCapita(getZipCode());
                 break;
-            case 6: printCUSTOM();
+            case 6:
+                printCUSTOM();
                 break;
-            default: printError();
+            default:
+                printError();
                 break;
         }
     }
 
     /**
      * Prompt user for zip code
+     *
      * @return zip code as string
      */
-    private String getZipCode(){
+    private String getZipCode() {
         String zipCode;
 
         do {
@@ -97,11 +104,10 @@ public class CommandLineUserInterface {
                 System.out.print("Enter zip code: ");
                 zipCode = Integer.toString(in.nextInt());
                 break;
-            }
-            catch (InputMismatchException e) {
+            } catch (InputMismatchException e) {
                 printError();
             }
-        } while(true);
+        } while (true);
 
         return zipCode;
     }
@@ -109,7 +115,7 @@ public class CommandLineUserInterface {
     /**
      * Prints choices to command line
      */
-    private void printInstructions(){
+    private void printInstructions() {
         System.out.println("Choose from the following options.");
         System.out.println("Enter:");
         System.out.println("\t1 for the total population for all ZIP Codes");
@@ -132,6 +138,10 @@ public class CommandLineUserInterface {
      */
     private void printTotalFinesPerCapita() {
         Map<String, Double> totalFinesPerCapita = parkingViolationProcessor.getTotalFinesPerCapita();
+
+        if (totalFinesPerCapita == null) {
+            return;
+        }
 
         for (Map.Entry<String, Double> entry : totalFinesPerCapita.entrySet()) {
             String key = entry.getKey();
