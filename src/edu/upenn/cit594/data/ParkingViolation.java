@@ -8,24 +8,24 @@ import java.util.Date;
  * occurred
  *
  * @author Chris Henry + Tim Chung
- *
  */
-public class ParkingViolation {
-    Date timeStamp;
-    double fineInDollars;
-    String description, vehicleId, vehicleState, id, zipCode;
+public class ParkingViolation { // implements Comparable<Object>, Comparator<Object> {
+    private Date timeStamp;
+    private int zipCode, id;
+    private double fineInDollars;
+    private String description, vehicleId, vehicleState;
 
     /**
-     * @param timeStamp
-     * @param fineInDollars
-     * @param description
-     * @param vehicleId
-     * @param vehicleState
-     * @param id
-     * @param zipCode
+     * @param timeStamp     date and time of violation occurrence
+     * @param fineInDollars violation fine in dollars
+     * @param description   description of violation
+     * @param vehicleId     license plate of vehicle in violation
+     * @param vehicleState  state of license plate of vehicle in violation
+     * @param id            unique identifier for the violation
+     * @param zipCode       zip code where the violation occurred
      */
     public ParkingViolation(Date timeStamp, double fineInDollars, String description, String vehicleId,
-                            String vehicleState, String id, String zipCode) {
+                            String vehicleState, int id, int zipCode) {
         this.timeStamp = timeStamp;
         this.fineInDollars = fineInDollars;
         this.description = description;
@@ -73,14 +73,67 @@ public class ParkingViolation {
     /**
      * @return id
      */
-    public String getId() {
+    public int getId() {
         return id;
     }
 
     /**
      * @return zipCode
      */
-    public String getZipCode() {
+    public int getZipCode() {
         return zipCode;
     }
+
+//    @Override
+//    public String toString() {
+//        return id + " " + zipCode;
+//    }
+//
+//    public boolean equals(Object obj) {
+//        if (obj instanceof ParkingViolation) {
+//            ParkingViolation other = (ParkingViolation) obj;
+//            return id == other.id;
+//        }
+//        return false;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return toString().hashCode();
+//    }
+//
+//    @Override
+//    public int compare(Object o1, Object o2) {
+//        if (o1 instanceof ParkingViolation && o2 instanceof ParkingViolation) {
+//            ParkingViolation p1 = (ParkingViolation) o1;
+//            ParkingViolation p2 = (ParkingViolation) o2;
+//            int zipCompare = Integer.compare(p1.getZipCode(), p2.getZipCode());
+//
+//            if (zipCompare == 0) {
+//                return Integer.compare(p1.getId(), p2.getId());
+//            } else {
+//                return zipCompare;
+//            }
+//        }
+//
+//        return 0;
+//    }
+//
+//    @Override
+//    public int compareTo(Object obj) {
+//        ParkingViolation p1 = this;
+//
+//        if (obj instanceof ParkingViolation) {
+//            ParkingViolation p2 = (ParkingViolation) obj;
+//            int zipCompare = Integer.compare(p1.getZipCode(), p2.getZipCode());
+//
+//            if (zipCompare == 0) {
+//                return Integer.compare(p1.getId(), p2.getId());
+//            } else {
+//                return zipCompare;
+//            }
+//        }
+//
+//        return 0;
+//    }
 }

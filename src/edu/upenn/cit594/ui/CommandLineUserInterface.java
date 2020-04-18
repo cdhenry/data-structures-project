@@ -96,13 +96,13 @@ public class CommandLineUserInterface {
      *
      * @return zip code as string
      */
-    private String getZipCode() {
-        String zipCode;
+    private int getZipCode() {
+        int zipCode;
 
         do {
             try {
                 System.out.print("Enter zip code: ");
-                zipCode = Integer.toString(in.nextInt());
+                zipCode = in.nextInt();
                 break;
             } catch (InputMismatchException e) {
                 printError();
@@ -137,39 +137,41 @@ public class CommandLineUserInterface {
      * Prints total fines per capita for each zip code
      */
     private void printTotalFinesPerCapita() {
-        Map<String, Double> totalFinesPerCapita = parkingViolationProcessor.getTotalFinesPerCapita();
+        Map<Integer, Double> totalFinesPerCapita = parkingViolationProcessor.getTotalFinesPerCapita(
+                populationProcessor.getPopulationsByZip());
 
         if (totalFinesPerCapita == null) {
             return;
         }
 
-        for (Map.Entry<String, Double> entry : totalFinesPerCapita.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            System.out.printf("%s %04.4f\n", key, value);
+        for (Map.Entry<Integer, Double> entry : totalFinesPerCapita.entrySet()) {
+            int key = entry.getKey();
+            double value = entry.getValue();
+            System.out.printf("%d %04.4f\n", key, value);
         }
     }
 
     /**
      * Prints average residential market value for provided zip code
      */
-    private void printAverageResidentialMarketValue(String zipCode) {
+    private void printAverageResidentialMarketValue(int zipCode) {
         System.out.printf("%04.4f\n", propertyValueProcessor.getAverageResidentialMarketValue(zipCode));
     }
 
     /**
      * Prints average residential total livable area for provided zip code
      */
-    private void printAverageResidentialTotalLivableArea(String zipCode) {
+    private void printAverageResidentialTotalLivableArea(int zipCode) {
         System.out.printf("%d\n", (int) propertyValueProcessor.getAverageResidentialTotalLivableArea(zipCode));
     }
 
     /**
      * Prints average residential market value per capita for provided zip code
      */
-    private void printTotalResidentialMarketValuePerCapita(String zipCode) {
-        System.out.printf("%d\n", (int) propertyValueProcessor.getTotalResidentialMarketValuePerCapita(zipCode,
-                populationProcessor.getPopulations()));
+    private void printTotalResidentialMarketValuePerCapita(int zipCode) {
+        int populationCount = populationProcessor.getPopulationsByZip().get(zipCode);
+        int total = (int) propertyValueProcessor.getTotalResidentialMarketValuePerCapita(zipCode, populationCount);
+        System.out.printf("%d\n", total);
     }
 
     // TODO: CUSTOM FEATURE
