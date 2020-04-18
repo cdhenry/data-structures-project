@@ -8,7 +8,6 @@ import java.util.List;
  * An interface used to specify the methods for getting parking violations from a file
  *
  * @author Chris Henry + Tim Chung
- *
  */
 public interface ParkingViolationReader {
     /**
@@ -16,5 +15,5 @@ public interface ParkingViolationReader {
      *
      * @return a list of parking violation objects
      */
-    public List<ParkingViolation> getAllParkingViolations();
+    List<ParkingViolation> getAllParkingViolations();
 }
