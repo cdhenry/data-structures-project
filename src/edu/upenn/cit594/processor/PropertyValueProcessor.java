@@ -1,11 +1,12 @@
 package edu.upenn.cit594.processor;
 
-import edu.upenn.cit594.data.Population;
 import edu.upenn.cit594.data.PropertyValue;
-import edu.upenn.cit594.data.PropertyValueComparator;
 import edu.upenn.cit594.datamanagement.PropertyValueReaderCSV;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Stores a list of PropertyValue objects and contains methods for performing various operations on the list
@@ -15,53 +16,75 @@ import java.util.List;
 public class PropertyValueProcessor {
     PropertyValueReaderCSV propertyValueReader;
     List<PropertyValue> propertyValues;
+    Map<Integer, List<PropertyValue>> propertyValuesByZip;
 
     /**
      * Constructs a PropertyValueProcessor to store a set of PropertyValue objects created by the
      * PropertyValueReader class
      *
-     * @param propertyValueReader
+     * @param propertyValueReader reader for property value data
      */
     public PropertyValueProcessor(PropertyValueReaderCSV propertyValueReader) {
         this.propertyValueReader = propertyValueReader;
         this.propertyValues = propertyValueReader.getAllPropertyValues();
+        this.propertyValuesByZip = new HashMap<>();
     }
 
     /**
-     *
-     * @param zipCode
-     * @param populations
+     * @return property values by zip code
+     */
+    public Map<Integer, List<PropertyValue>> getPropertyValuesByZip() {
+        if (propertyValuesByZip.isEmpty()) {
+
+            for (PropertyValue propertyValue : propertyValues) {
+                int zipCode = propertyValue.getZipCode();
+                List<PropertyValue> propertyValues = propertyValuesByZip.containsKey(zipCode) ?
+                        propertyValuesByZip.get(zipCode) : new LinkedList<>();
+
+                propertyValues.add(propertyValue);
+                propertyValuesByZip.put(zipCode, propertyValues);
+            }
+        }
+
+        return propertyValuesByZip;
+    }
+
+    /**
+     * @param zipCode         zip code in which to search
+     * @param populationCount population count for provided zip code
      * @return Total Residential Market Value Per Capita
      */
-    public double getTotalResidentialMarketValuePerCapita(String zipCode, List<Population> populations){
-        return 0.0;
+    public double getTotalResidentialMarketValuePerCapita(int zipCode, int populationCount) {
+        List<PropertyValue> properties = propertyValuesByZip.get(zipCode);
+
+        return getAverage(new MarketValueReducer(properties), populationCount);
     }
 
     /**
-     *
-     * @param zipCode
-     * @return  Average Residential Market Value
+     * @param zipCode zip code in which to search
+     * @return Average Residential Market Value
      */
-    public double getAverageResidentialMarketValue(String zipCode){
-        return 0.0;
+    public double getAverageResidentialMarketValue(int zipCode) {
+        List<PropertyValue> properties = propertyValuesByZip.get(zipCode);
+
+        return getAverage(new MarketValueReducer(properties), properties.size());
     }
 
     /**
-     *
-     * @param zipCode
+     * @param zipCode zip code in which to search
      * @return Average Residential Total Livable Area
      */
-    public double getAverageResidentialTotalLivableArea(String zipCode) {
-        return 0.0;
+    public double getAverageResidentialTotalLivableArea(int zipCode) {
+        List<PropertyValue> properties = propertyValuesByZip.get(zipCode);
+
+        return getAverage(new TotalLivableAreaReducer(), properties.size());
     }
 
     /**
-     *
-     * @param zipCode
-     * @param comparator
+     * @param reducer comparator to use when finding average
      * @return an average based on a zip code and a comparator
      */
-    private double getAverageByZip(String zipCode, PropertyValueComparator comparator) {
-        return 0.0;
+    private double getAverage(PropertyValueReducer reducer, int listSize) {
+        return reducer.reduce() / (double) listSize;
     }
 }
