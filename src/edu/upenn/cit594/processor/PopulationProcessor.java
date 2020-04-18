@@ -25,10 +25,14 @@ public class PopulationProcessor {
     }
 
     /**
-     * @return total population
+     * @return total population, -1 for error
      */
     public int getTotalPopulation() {
-        return 0;
+        int totalPopulation = -1;
+        for (Population population : populations) {
+            totalPopulation += population.getPopulation();
+        }
+        return totalPopulation;
     }
 
     /**
