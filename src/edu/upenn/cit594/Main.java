@@ -56,7 +56,7 @@ public class Main {
     public static void main(String[] args) {
         if (args.length < 5) {
             System.out.println(USAGE_ERR_MSG);
-            System.exit(0);
+            System.exit(1);
         }
 
         String parkingViolationsFileFormat = args[0].toLowerCase();
@@ -65,13 +65,13 @@ public class Main {
 
         if (!(isParkingViolationsJSON || isParkingViolationsCSV)) {
             System.out.println(FILE_FORMAT_ERR_MSG);
-            System.exit(0);
+            System.exit(2);
         }
 
         File logFile = new File(args[4]);
         if (logFile.exists() && !logFile.canWrite()) {
             System.out.println(LOG_FILE_ERR_MSG);
-            System.exit(0);
+            System.exit(3);
         }
 
         Logger.init(logFile);
