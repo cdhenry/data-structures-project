@@ -46,26 +46,32 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
                 if (timeString.length() == 0) {
                     continue;
                 }
+
                 String fine = parkingViolationArray[1];
                 if (fine.length() == 0) {
                     continue;
                 }
+
                 String violation = parkingViolationArray[2];
                 if (violation.length() == 0) {
                     continue;
                 }
+
                 String plateId = parkingViolationArray[3];
                 if (plateId.length() == 0) {
                     continue;
                 }
+
                 String state = parkingViolationArray[4];
                 if (state.length() == 0) {
                     continue;
                 }
+
                 String ticketNumber = parkingViolationArray[5];
                 if (ticketNumber.length() == 0) {
                     continue;
                 }
+
                 String zipCode = parkingViolationArray[6];
                 if (zipCode.length() == 0) {
                     continue;
