@@ -68,6 +68,8 @@ public class PropertyValueReaderCSV {
                 String zipCode = propertyValueArray[zipCodeIndex];
                 if (zipCode.length() == 0) {
                     continue;
+                } else {
+                    zipCode = zipCode.substring(0, 5);
                 }
 
                 propertyValues.add(new PropertyValue(++id, Double.parseDouble(marketValue),
