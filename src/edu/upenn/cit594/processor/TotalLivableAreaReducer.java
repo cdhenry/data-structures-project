@@ -8,8 +8,8 @@ import java.util.List;
 public class TotalLivableAreaReducer implements PropertyValueReducer {
     List<PropertyValue> properties;
 
-    public TotalLivableAreaReducer() {
-        this.properties = new LinkedList<>();
+    public TotalLivableAreaReducer(List<PropertyValue> properties) {
+        this.properties = properties;
     }
 
     @Override
