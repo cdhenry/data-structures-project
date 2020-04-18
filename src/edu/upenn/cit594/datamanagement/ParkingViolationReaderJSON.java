@@ -62,10 +62,10 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
                 }
 
                 String zipCode = (String) parkingViolation.get("zip_code");
-                if (zipCode.length() == 0) {
-                    continue;
-                } else {
+                if (zipCode.length() > 4) {
                     zipCode = zipCode.substring(0, 5);
+                } else {
+                    continue;
                 }
 
                 String violation = (String) parkingViolation.get("violation");

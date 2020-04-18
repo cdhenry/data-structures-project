@@ -43,14 +43,14 @@ public class PopulationReaderSSV {
                 String population = in.nextLine();
                 String[] populationArray = population.trim().split(SPACE);
 
-                String zipCode = populationArray[0];
-                if (zipCode.length() == 0) {
-                    continue;
-                } else {
+                String zipCode = populationArray[0].trim();
+                if (zipCode.length() > 4) {
                     zipCode = zipCode.substring(0, 5);
+                } else {
+                    continue;
                 }
 
-                String populationCount = populationArray[1];
+                String populationCount = populationArray[1].trim();
                 if (populationCount.length() == 0) {
                     continue;
                 }

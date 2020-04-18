@@ -57,19 +57,19 @@ public class PropertyValueReaderCSV {
                 String propertyValue = in.nextLine();
                 String[] propertyValueArray = propertyValue.trim().split(COMMA);
 
-                String marketValue = propertyValueArray[marketValueIndex];
+                String marketValue = propertyValueArray[marketValueIndex].trim();
                 if (marketValue.length() == 0) {
                     continue;
                 }
-                String totalLivableArea = propertyValueArray[totalLivableAreaIndex];
+                String totalLivableArea = propertyValueArray[totalLivableAreaIndex].trim();
                 if (totalLivableArea.length() == 0) {
                     continue;
                 }
-                String zipCode = propertyValueArray[zipCodeIndex];
-                if (zipCode.length() == 0) {
-                    continue;
-                } else {
+                String zipCode = propertyValueArray[zipCodeIndex].trim();
+                if (zipCode.length() > 4) {
                     zipCode = zipCode.substring(0, 5);
+                } else {
+                    continue;
                 }
 
                 propertyValues.add(new PropertyValue(++id, Double.parseDouble(marketValue),

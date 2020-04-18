@@ -42,41 +42,41 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
                 String parkingViolation = in.nextLine();
                 String[] parkingViolationArray = parkingViolation.trim().split(COMMA);
 
-                String timeString = parkingViolationArray[0];
+                String timeString = parkingViolationArray[0].trim();
                 if (timeString.length() == 0) {
                     continue;
                 }
 
-                String fine = parkingViolationArray[1];
+                String fine = parkingViolationArray[1].trim();
                 if (fine.length() == 0) {
                     continue;
                 }
 
-                String violation = parkingViolationArray[2];
+                String violation = parkingViolationArray[2].trim();
                 if (violation.length() == 0) {
                     continue;
                 }
 
-                String plateId = parkingViolationArray[3];
+                String plateId = parkingViolationArray[3].trim();
                 if (plateId.length() == 0) {
                     continue;
                 }
 
-                String state = parkingViolationArray[4];
+                String state = parkingViolationArray[4].trim();
                 if (state.length() == 0) {
                     continue;
                 }
 
-                String ticketNumber = parkingViolationArray[5];
+                String ticketNumber = parkingViolationArray[5].trim();
                 if (ticketNumber.length() == 0) {
                     continue;
                 }
 
-                String zipCode = parkingViolationArray[6];
-                if (zipCode.length() == 0) {
-                    continue;
-                } else {
+                String zipCode = parkingViolationArray[6].trim();
+                if (zipCode.length() > 4) {
                     zipCode = zipCode.substring(0, 5);
+                } else {
+                    continue;
                 }
 
                 Date timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeString);
