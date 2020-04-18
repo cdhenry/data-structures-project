@@ -44,9 +44,15 @@ public class PopulationReaderSSV {
                 String[] populationArray = population.trim().split(SPACE);
 
                 String zipCode = populationArray[0];
-                int populationCount = Integer.parseInt(populationArray[1]);
+                if(zipCode.length() == 0){
+                    continue;
+                }
+                String populationCount = populationArray[1];
+                if(populationCount.length() == 0){
+                    continue;
+                }
 
-                populations.add(new Population(Integer.parseInt(zipCode), populationCount));
+                populations.add(new Population(Integer.parseInt(zipCode), Integer.parseInt(populationCount)));
             }
         } catch (FileNotFoundException e) {
             System.out.println(FILE_ERR_MSG);
