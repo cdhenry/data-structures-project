@@ -43,16 +43,38 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
                 String[] parkingViolationArray = parkingViolation.trim().split(COMMA);
 
                 String timeString = parkingViolationArray[0];
-                Date timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeString);
-                double fine = Double.parseDouble(parkingViolationArray[1]);
+                if (timeString.length() == 0) {
+                    continue;
+                }
+                String fine = parkingViolationArray[1];
+                if (fine.length() == 0) {
+                    continue;
+                }
                 String violation = parkingViolationArray[2];
+                if (violation.length() == 0) {
+                    continue;
+                }
                 String plateId = parkingViolationArray[3];
+                if (plateId.length() == 0) {
+                    continue;
+                }
                 String state = parkingViolationArray[4];
+                if (state.length() == 0) {
+                    continue;
+                }
                 String ticketNumber = parkingViolationArray[5];
+                if (ticketNumber.length() == 0) {
+                    continue;
+                }
                 String zipCode = parkingViolationArray[6];
+                if (zipCode.length() == 0) {
+                    continue;
+                }
 
-                parkingViolations.add(new ParkingViolation(timeStamp, fine, violation, plateId, state,
-                        Integer.parseInt(ticketNumber), Integer.parseInt(zipCode)));
+                Date timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeString);
+
+                parkingViolations.add(new ParkingViolation(timeStamp, Double.parseDouble(fine), violation, plateId,
+                        state, Integer.parseInt(ticketNumber), Integer.parseInt(zipCode)));
             }
         } catch (FileNotFoundException e) {
             System.out.println(FILE_ERR_MSG);

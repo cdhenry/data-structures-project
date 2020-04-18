@@ -48,17 +48,39 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
             for (Object o : parkingViolationsJSON) {
                 JSONObject parkingViolation = (JSONObject) o;
 
-                long ticketNumber = (long) parkingViolation.get("ticket_number");
+                String ticketNumber = (String) parkingViolation.get("ticket_number");
+                if (ticketNumber.length() == 0) {
+                    continue;
+                }
                 String plateId = (String) parkingViolation.get("plate_id");
+                if (plateId.length() == 0) {
+                    continue;
+                }
                 String timeString = (String) parkingViolation.get("date");
-                Date timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeString);
+                if (timeString.length() == 0) {
+                    continue;
+                }
                 String zipCode = (String) parkingViolation.get("zip_code");
+                if (zipCode.length() == 0) {
+                    continue;
+                }
                 String violation = (String) parkingViolation.get("violation");
-                long fine = (long) parkingViolation.get("fine");
+                if (violation.length() == 0) {
+                    continue;
+                }
+                String fine = (String) parkingViolation.get("fine");
+                if (fine.length() == 0) {
+                    continue;
+                }
                 String state = (String) parkingViolation.get("state");
+                if (state.length() == 0) {
+                    continue;
+                }
 
-                parkingViolations.add(new ParkingViolation(timeStamp, new Long(fine).doubleValue(), violation,
-                        plateId, state, new Long(ticketNumber).intValue(), Integer.parseInt(zipCode)));
+                Date timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeString);
+
+                parkingViolations.add(new ParkingViolation(timeStamp, Double.parseDouble(fine), violation,
+                        plateId, state, Integer.parseInt(ticketNumber), Integer.parseInt(zipCode)));
             }
         } catch (ParseException e) {
             System.out.println(DATE_PARSE_ERR_MSG);
