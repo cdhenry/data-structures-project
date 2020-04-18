@@ -4,6 +4,8 @@ import edu.upenn.cit594.data.PropertyValue;
 import edu.upenn.cit594.logging.Logger;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -14,16 +16,17 @@ import java.util.Scanner;
  * @author Chris Henry + Tim Chung
  */
 public class PropertyValueReaderCSV {
+    private static final String FILE_ERR_MSG = "property value file must exist and be readable";
     private static final String COMMA = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
-    protected File file;
+    protected String filename;
 
     /**
      * Takes in a filename and stores it for use on a comma separated text file
      *
-     * @param file an existing file opened with FileReader
+     * @param filename a CSV filename for a property value file
      */
-    public PropertyValueReaderCSV(File file) {
-        this.file = file;
+    public PropertyValueReaderCSV(String filename) {
+        this.filename = filename;
     }
 
     /**
@@ -34,8 +37,10 @@ public class PropertyValueReaderCSV {
     public List<PropertyValue> getAllPropertyValues() {
         List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
 
-        try (Scanner in = new Scanner(file)) {
-            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), file.getName()));
+        try {
+            FileReader file = new FileReader(filename);
+            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), filename));
+            Scanner in = new Scanner(file);
 
             String headers = in.nextLine();
             String[] headerArray = headers.trim().split(COMMA);
@@ -72,8 +77,8 @@ public class PropertyValueReaderCSV {
                         Double.parseDouble(totalLivableArea), zipCode));
 
             }
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
+        } catch (FileNotFoundException e) {
+            System.out.println(FILE_ERR_MSG);
         }
 
         return propertyValues;

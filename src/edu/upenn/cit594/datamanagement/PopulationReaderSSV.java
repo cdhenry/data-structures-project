@@ -4,6 +4,8 @@ import edu.upenn.cit594.data.Population;
 import edu.upenn.cit594.logging.Logger;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -14,16 +16,17 @@ import java.util.Scanner;
  * @author Chris Henry + Tim Chung
  */
 public class PopulationReaderSSV {
+    private static final String FILE_ERR_MSG = "population file must exist and be readable";
     private static final String SPACE = " ";
-    protected File file;
+    protected String filename;
 
     /**
      * Takes in a filename and stores it for use on a comma separated text file
      *
-     * @param file an existing file opened with FileReader
+     * @param filename an SSV filename for a population file
      */
-    public PopulationReaderSSV(File file) {
-        this.file = file;
+    public PopulationReaderSSV(String filename) {
+        this.filename = filename;
     }
 
     /**
@@ -34,8 +37,10 @@ public class PopulationReaderSSV {
     public List<Population> getAllPopulations() {
         List<Population> populations = new ArrayList<Population>();
 
-        try (Scanner in = new Scanner(file)) {
-            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), file.getName()));
+        try {
+            FileReader file = new FileReader(filename);
+            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), filename));
+            Scanner in = new Scanner(file);
 
             while (in.hasNextLine()) {
                 String population = in.nextLine();
@@ -46,8 +51,8 @@ public class PopulationReaderSSV {
 
                 populations.add(new Population(zipCode, populationCount));
             }
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
+        } catch (FileNotFoundException e) {
+            System.out.println(FILE_ERR_MSG);
         }
 
         return populations;

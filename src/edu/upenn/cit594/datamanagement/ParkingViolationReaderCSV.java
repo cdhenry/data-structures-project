@@ -3,7 +3,9 @@ package edu.upenn.cit594.datamanagement;
 import edu.upenn.cit594.data.ParkingViolation;
 import edu.upenn.cit594.logging.Logger;
 
-import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,24 +18,28 @@ import java.util.Scanner;
  * @author Chris Henry + Tim Chung
  */
 public class ParkingViolationReaderCSV implements ParkingViolationReader {
+    private static final String FILE_ERR_MSG = "parking violation file must exist and be readable";
+    private static final String DATE_PARSE_ERR_MSG = "parking violation date parse error";
     private static final String COMMA = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
-    protected File file;
+    protected String filename;
 
     /**
      * Takes in a filename and stores it for use on a comma separated text file
      *
-     * @param file an existing file opened with FileReader
+     * @param filename a CSV filename for a parking violation file
      */
-    public ParkingViolationReaderCSV(File file) {
-        this.file = file;
+    public ParkingViolationReaderCSV(String filename) {
+        this.filename = filename;
     }
 
     @Override
     public List<ParkingViolation> getAllParkingViolations() {
         List<ParkingViolation> parkingViolations = new ArrayList<ParkingViolation>();
 
-        try (Scanner in = new Scanner(file)) {
-            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), file.getName()));
+        try {
+            FileReader file = new FileReader(filename);
+            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), filename));
+            Scanner in = new Scanner(file);
 
             while (in.hasNextLine()) {
                 String parkingViolation = in.nextLine();
@@ -51,8 +57,10 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
                 parkingViolations.add(new ParkingViolation(timeStamp, fine, violation, plateId, state, ticketNumber,
                         zipCode));
             }
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
+        } catch (FileNotFoundException e) {
+            System.out.println(FILE_ERR_MSG);
+        } catch (ParseException e) {
+            System.out.println(DATE_PARSE_ERR_MSG);
         }
 
         return parkingViolations;
