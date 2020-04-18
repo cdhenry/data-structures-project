@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -21,33 +21,33 @@ import java.util.List;
  * @author Chris Henry + Tim Chung
  */
 public class ParkingViolationReaderJSON implements ParkingViolationReader {
-    protected File file;
+    private static final String FILE_ERR_MSG = "parking violation file must exist and be readable";
+    private static final String DATE_PARSE_ERR_MSG = "parking violation date parse error";
+    private static final String JSON_PARSE_ERR_MSG = "parking violation JSON parse error";
+    protected String filename;
     protected JSONParser parser;
 
     /**
      * Takes in a filename and stores it for use on the json parser
      *
-     * @param file the JSON file to be used for parsing data
+     * @param filename a JSON filename for a parking violation file
      */
-    public ParkingViolationReaderJSON(File file) {
-        this.file = file;
+    public ParkingViolationReaderJSON(String filename) {
+        this.filename = filename;
+        this.parser = new JSONParser();
     }
 
     @Override
     public List<ParkingViolation> getAllParkingViolations() {
         List<ParkingViolation> parkingViolations = new ArrayList<ParkingViolation>();
 
-        // create a parser JSONParser
-        parser = new JSONParser();
-
         try {
-            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), file.getName()));
-            // get the array of JSON objects
-            JSONArray parkingViolationsJSON = (JSONArray) parser.parse(new FileReader(file));
+            FileReader file = new FileReader(filename);
+            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), filename));
 
-            // iterate while there are more objects in array
+            JSONArray parkingViolationsJSON = (JSONArray) parser.parse(file);
+
             for (Object o : parkingViolationsJSON) {
-                // get the next JSON object
                 JSONObject parkingViolation = (JSONObject) o;
 
                 long ticketNumber = (long) parkingViolation.get("ticket_number");
@@ -62,8 +62,12 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
                 parkingViolations.add(new ParkingViolation(timeStamp, new Long(fine).doubleValue(), violation,
                         plateId, state, Long.toString(ticketNumber), zipCode));
             }
-        } catch (IOException | ParseException | java.text.ParseException e) {
-            e.printStackTrace();
+        } catch (ParseException e) {
+            System.out.println(DATE_PARSE_ERR_MSG);
+        } catch (FileNotFoundException e) {
+            System.out.println(FILE_ERR_MSG);
+        } catch (IOException | java.text.ParseException e) {
+            System.out.println(JSON_PARSE_ERR_MSG);
         }
 
         return parkingViolations;
