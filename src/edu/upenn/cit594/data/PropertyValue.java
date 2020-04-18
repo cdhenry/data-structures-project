@@ -53,23 +53,23 @@ public class PropertyValue { // implements Comparator<Object>, Comparable<Object
         return zipCode;
     }
 
-//    @Override
-//    public String toString() {
-//        return id + " " + zipCode;
-//    }
-//
-//    public boolean equals(Object obj) {
-//        if (obj instanceof PropertyValue) {
-//            PropertyValue other = (PropertyValue) obj;
-//            return id == other.id;
-//        }
-//        return false;
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return toString().hashCode();
-//    }
+    @Override
+    public String toString() {
+        return id + " " + zipCode;
+    }
+
+    public boolean equals(Object obj) {
+        if (obj instanceof PropertyValue) {
+            PropertyValue other = (PropertyValue) obj;
+            return id == other.id;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
 //
 //    @Override
 //    public int compare(Object o1, Object o2) {
