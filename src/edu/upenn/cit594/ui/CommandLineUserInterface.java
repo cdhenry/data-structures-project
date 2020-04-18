@@ -1,5 +1,6 @@
 package edu.upenn.cit594.ui;
 
+import edu.upenn.cit594.logging.Logger;
 import edu.upenn.cit594.processor.ParkingViolationProcessor;
 import edu.upenn.cit594.processor.PopulationProcessor;
 import edu.upenn.cit594.processor.PropertyValueProcessor;
@@ -47,6 +48,7 @@ public class CommandLineUserInterface {
                 while (choice != 0) {
                     printInstructions();
                     choice = in.nextInt();
+                    Logger.getInstance().log(String.format("%d %d\n", System.currentTimeMillis(), choice));
                     performAction(choice);
                 }
                 break;
@@ -103,6 +105,7 @@ public class CommandLineUserInterface {
             try {
                 System.out.print("Enter zip code: ");
                 zipCode = in.nextInt();
+                Logger.getInstance().log(String.format("%d %d\n", System.currentTimeMillis(), zipCode));
                 break;
             } catch (InputMismatchException e) {
                 printError();
