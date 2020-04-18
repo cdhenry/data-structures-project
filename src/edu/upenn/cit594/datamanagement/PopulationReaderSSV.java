@@ -3,12 +3,9 @@ package edu.upenn.cit594.datamanagement;
 import edu.upenn.cit594.data.Population;
 import edu.upenn.cit594.logging.Logger;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Uses a scanner to parse a space separated text file for population data
@@ -35,7 +32,7 @@ public class PopulationReaderSSV {
      * @return a list of population objects
      */
     public List<Population> getAllPopulations() {
-        List<Population> populations = new ArrayList<Population>();
+        List<Population> populations = new LinkedList<>();
 
         try {
             FileReader file = new FileReader(filename);
@@ -49,7 +46,7 @@ public class PopulationReaderSSV {
                 String zipCode = populationArray[0];
                 int populationCount = Integer.parseInt(populationArray[1]);
 
-                populations.add(new Population(zipCode, populationCount));
+                populations.add(new Population(Integer.parseInt(zipCode), populationCount));
             }
         } catch (FileNotFoundException e) {
             System.out.println(FILE_ERR_MSG);

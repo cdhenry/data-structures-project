@@ -3,12 +3,9 @@ package edu.upenn.cit594.datamanagement;
 import edu.upenn.cit594.data.PropertyValue;
 import edu.upenn.cit594.logging.Logger;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Uses a scanner to parse a comma separated text file for property value data
@@ -35,7 +32,7 @@ public class PropertyValueReaderCSV {
      * @return a list of property value objects
      */
     public List<PropertyValue> getAllPropertyValues() {
-        List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
+        List<PropertyValue> propertyValues = new LinkedList<>();
 
         try {
             FileReader file = new FileReader(filename);
@@ -44,7 +41,7 @@ public class PropertyValueReaderCSV {
 
             String headers = in.nextLine();
             String[] headerArray = headers.trim().split(COMMA);
-            int marketValueIndex = -1, totalLivableAreaIndex = -1, zipCodeIndex = -1;
+            int marketValueIndex = -1, totalLivableAreaIndex = -1, zipCodeIndex = -1, id = -1;
 
             for (int i = 0; i < headerArray.length; i++) {
                 if (headerArray[i].equals("market_value")) {
@@ -73,9 +70,8 @@ public class PropertyValueReaderCSV {
                     continue;
                 }
 
-                propertyValues.add(new PropertyValue(Double.parseDouble(marketValue),
-                        Double.parseDouble(totalLivableArea), zipCode));
-
+                propertyValues.add(new PropertyValue(++id, Double.parseDouble(marketValue),
+                        Double.parseDouble(totalLivableArea), Integer.parseInt(zipCode)));
             }
         } catch (FileNotFoundException e) {
             System.out.println(FILE_ERR_MSG);

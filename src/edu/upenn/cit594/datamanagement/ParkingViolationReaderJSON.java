@@ -11,9 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Uses the json.simple library to parse a JSON file into a set of ParkingViolation objects
@@ -39,7 +37,7 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
 
     @Override
     public List<ParkingViolation> getAllParkingViolations() {
-        List<ParkingViolation> parkingViolations = new ArrayList<ParkingViolation>();
+        List<ParkingViolation> parkingViolations = new LinkedList<ParkingViolation>();
 
         try {
             FileReader file = new FileReader(filename);
@@ -60,7 +58,7 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
                 String state = (String) parkingViolation.get("state");
 
                 parkingViolations.add(new ParkingViolation(timeStamp, new Long(fine).doubleValue(), violation,
-                        plateId, state, Long.toString(ticketNumber), zipCode));
+                        plateId, state, new Long(ticketNumber).intValue(), Integer.parseInt(zipCode)));
             }
         } catch (ParseException e) {
             System.out.println(DATE_PARSE_ERR_MSG);
