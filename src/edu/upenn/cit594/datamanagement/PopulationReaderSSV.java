@@ -1,8 +1,9 @@
 package edu.upenn.cit594.datamanagement;
 
 import edu.upenn.cit594.data.Population;
+import edu.upenn.cit594.logging.Logger;
 
-import java.io.FileReader;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -11,18 +12,17 @@ import java.util.Scanner;
  * Uses a scanner to parse a space separated text file for population data
  *
  * @author Chris Henry + Tim Chung
- *
  */
 public class PopulationReaderSSV {
     private static final String SPACE = " ";
-    protected FileReader file;
+    protected File file;
 
     /**
      * Takes in a filename and stores it for use on a comma separated text file
      *
      * @param file an existing file opened with FileReader
      */
-    public PopulationReaderSSV(FileReader file) {
+    public PopulationReaderSSV(File file) {
         this.file = file;
     }
 
@@ -35,6 +35,7 @@ public class PopulationReaderSSV {
         List<Population> populations = new ArrayList<Population>();
 
         try (Scanner in = new Scanner(file)) {
+            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), file.getName()));
 
             while (in.hasNextLine()) {
                 String population = in.nextLine();

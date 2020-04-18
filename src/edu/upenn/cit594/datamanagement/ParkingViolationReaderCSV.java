@@ -1,8 +1,9 @@
 package edu.upenn.cit594.datamanagement;
 
 import edu.upenn.cit594.data.ParkingViolation;
+import edu.upenn.cit594.logging.Logger;
 
-import java.io.FileReader;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,18 +14,17 @@ import java.util.Scanner;
  * Uses a scanner to parse a comma separated text file for parking violation data
  *
  * @author Chris Henry + Tim Chung
- *
  */
 public class ParkingViolationReaderCSV implements ParkingViolationReader {
     private static final String COMMA = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
-    protected FileReader file;
+    protected File file;
 
     /**
      * Takes in a filename and stores it for use on a comma separated text file
      *
      * @param file an existing file opened with FileReader
      */
-    public ParkingViolationReaderCSV(FileReader file) {
+    public ParkingViolationReaderCSV(File file) {
         this.file = file;
     }
 
@@ -33,6 +33,7 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
         List<ParkingViolation> parkingViolations = new ArrayList<ParkingViolation>();
 
         try (Scanner in = new Scanner(file)) {
+            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), file.getName()));
 
             while (in.hasNextLine()) {
                 String parkingViolation = in.nextLine();

@@ -1,11 +1,13 @@
 package edu.upenn.cit594.datamanagement;
 
 import edu.upenn.cit594.data.ParkingViolation;
+import edu.upenn.cit594.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -17,10 +19,9 @@ import java.util.List;
  * Uses the json.simple library to parse a JSON file into a set of ParkingViolation objects
  *
  * @author Chris Henry + Tim Chung
- *
  */
 public class ParkingViolationReaderJSON implements ParkingViolationReader {
-    protected FileReader file;
+    protected File file;
     protected JSONParser parser;
 
     /**
@@ -28,7 +29,7 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
      *
      * @param file the JSON file to be used for parsing data
      */
-    public ParkingViolationReaderJSON(FileReader file) {
+    public ParkingViolationReaderJSON(File file) {
         this.file = file;
     }
 
@@ -40,8 +41,9 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
         parser = new JSONParser();
 
         try {
+            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), file.getName()));
             // get the array of JSON objects
-            JSONArray parkingViolationsJSON = (JSONArray) parser.parse(file);
+            JSONArray parkingViolationsJSON = (JSONArray) parser.parse(new FileReader(file));
 
             // iterate while there are more objects in array
             for (Object o : parkingViolationsJSON) {

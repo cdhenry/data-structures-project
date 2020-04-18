@@ -1,8 +1,9 @@
 package edu.upenn.cit594.datamanagement;
 
 import edu.upenn.cit594.data.PropertyValue;
+import edu.upenn.cit594.logging.Logger;
 
-import java.io.FileReader;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -11,18 +12,17 @@ import java.util.Scanner;
  * Uses a scanner to parse a comma separated text file for property value data
  *
  * @author Chris Henry + Tim Chung
- *
  */
 public class PropertyValueReaderCSV {
     private static final String COMMA = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
-    protected FileReader file;
+    protected File file;
 
     /**
      * Takes in a filename and stores it for use on a comma separated text file
      *
      * @param file an existing file opened with FileReader
      */
-    public PropertyValueReaderCSV(FileReader file) {
+    public PropertyValueReaderCSV(File file) {
         this.file = file;
     }
 
@@ -35,6 +35,8 @@ public class PropertyValueReaderCSV {
         List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
 
         try (Scanner in = new Scanner(file)) {
+            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), file.getName()));
+
             String headers = in.nextLine();
             String[] headerArray = headers.trim().split(COMMA);
             int marketValueIndex = -1, totalLivableAreaIndex = -1, zipCodeIndex = -1;
@@ -54,13 +56,21 @@ public class PropertyValueReaderCSV {
                 String[] propertyValueArray = propertyValue.trim().split(COMMA);
 
                 String marketValue = propertyValueArray[marketValueIndex];
-                String totalLivableArea = propertyValueArray[totalLivableAreaIndex];
-                String zipCode = propertyValueArray[zipCodeIndex];
-
-                if(marketValue.length() > 0 && totalLivableArea.length() > 0 && zipCode.length() > 0) {
-                    propertyValues.add(new PropertyValue(Double.parseDouble(marketValue),
-                            Double.parseDouble(totalLivableArea), zipCode));
+                if (marketValue.length() == 0) {
+                    continue;
                 }
+                String totalLivableArea = propertyValueArray[totalLivableAreaIndex];
+                if (totalLivableArea.length() == 0) {
+                    continue;
+                }
+                String zipCode = propertyValueArray[zipCodeIndex];
+                if (zipCode.length() == 0) {
+                    continue;
+                }
+
+                propertyValues.add(new PropertyValue(Double.parseDouble(marketValue),
+                        Double.parseDouble(totalLivableArea), zipCode));
+
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);
