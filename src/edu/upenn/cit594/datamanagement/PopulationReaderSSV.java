@@ -47,6 +47,7 @@ public class PopulationReaderSSV {
                 if(zipCode.length() == 0){
                     continue;
                 }
+
                 String populationCount = populationArray[1];
                 if(populationCount.length() == 0){
                     continue;
