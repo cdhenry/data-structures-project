@@ -27,13 +27,13 @@ public class Main {
     private static final String USAGE_ERR_MSG = "Usage: java Main [parking violations file format] " +
             "[parking violations filename] [property values filename] [population filename] [log filename]";
 
-    private static ParkingViolationReader parkingViolationReader;
-    private static PropertyValueReaderCSV propertyValueReader;
-    private static PopulationReaderSSV populationReader;
-    private static ParkingViolationProcessor parkingViolationProcessor;
-    private static PropertyValueProcessor propertyValueProcessor;
-    private static PopulationProcessor populationProcessor;
-    private static CommandLineUserInterface ui;
+    protected static ParkingViolationReader parkingViolationReader;
+    protected static PropertyValueReaderCSV propertyValueReader;
+    protected static PopulationReaderSSV populationReader;
+    protected static ParkingViolationProcessor parkingViolationProcessor;
+    protected static PropertyValueProcessor propertyValueProcessor;
+    protected static PopulationProcessor populationProcessor;
+    protected static CommandLineUserInterface ui;
 
     public static void createReaders(boolean isParkingViolationsJSON, String parkingViolationsFilename,
                                      String propertyValuesFilename, String populationFilename) {

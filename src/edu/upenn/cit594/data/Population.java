@@ -6,8 +6,8 @@ package edu.upenn.cit594.data;
  * @author Chris Henry + Tim Chung
  */
 public class Population { // implements Comparable<Object>, Comparator<Object> {
-    private int zipCode;
-    private int population;
+    protected int zipCode;
+    protected int population;
 
     /**
      * @param zipCode    zip code of population

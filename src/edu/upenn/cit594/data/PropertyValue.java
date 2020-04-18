@@ -9,8 +9,8 @@ import java.util.Comparator;
  * @author Chris Henry + Tim Chung
  */
 public class PropertyValue { // implements Comparator<Object>, Comparable<Object> {
-    int id, zipCode;
-    double marketValue, totalLivableArea;
+    protected int id, zipCode;
+    protected double marketValue, totalLivableArea;
 
     /**
      * @param id               unique identifier for property

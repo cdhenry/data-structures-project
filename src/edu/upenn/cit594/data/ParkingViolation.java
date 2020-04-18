@@ -10,10 +10,10 @@ import java.util.Date;
  * @author Chris Henry + Tim Chung
  */
 public class ParkingViolation { // implements Comparable<Object>, Comparator<Object> {
-    private Date timeStamp;
-    private int zipCode, id;
-    private double fineInDollars;
-    private String description, vehicleId, vehicleState;
+    protected Date timeStamp;
+    protected int zipCode, id;
+    protected double fineInDollars;
+    protected String description, vehicleId, vehicleState;
 
     /**
      * @param timeStamp     date and time of violation occurrence

@@ -14,9 +14,9 @@ import java.util.Map;
  * @author Chris Henry + Tim Chung
  */
 public class PropertyValueProcessor {
-    PropertyValueReaderCSV propertyValueReader;
-    List<PropertyValue> propertyValues;
-    Map<Integer, List<PropertyValue>> propertyValuesByZip;
+    protected PropertyValueReaderCSV propertyValueReader;
+    protected List<PropertyValue> propertyValues;
+    protected Map<Integer, List<PropertyValue>> propertyValuesByZip;
 
     /**
      * Constructs a PropertyValueProcessor to store a set of PropertyValue objects created by the
@@ -55,9 +55,9 @@ public class PropertyValueProcessor {
      * @return Total Residential Market Value Per Capita
      */
     public double getTotalResidentialMarketValuePerCapita(int zipCode, int populationCount) {
-        List<PropertyValue> properties = propertyValuesByZip.get(zipCode);
+        List<PropertyValue> properties = getPropertyValuesByZip().get(zipCode);
 
-        return getAverage(new MarketValueReducer(properties), populationCount);
+        return properties == null ? 0.0 : getAverage(new MarketValueReducer(properties), populationCount);
     }
 
     /**
@@ -65,9 +65,9 @@ public class PropertyValueProcessor {
      * @return Average Residential Market Value
      */
     public double getAverageResidentialMarketValue(int zipCode) {
-        List<PropertyValue> properties = propertyValuesByZip.get(zipCode);
+        List<PropertyValue> properties = getPropertyValuesByZip().get(zipCode);
 
-        return getAverage(new MarketValueReducer(properties), properties.size());
+        return properties == null ? 0.0 : getAverage(new MarketValueReducer(properties), properties.size());
     }
 
     /**
@@ -75,9 +75,9 @@ public class PropertyValueProcessor {
      * @return Average Residential Total Livable Area
      */
     public double getAverageResidentialTotalLivableArea(int zipCode) {
-        List<PropertyValue> properties = propertyValuesByZip.get(zipCode);
+        List<PropertyValue> properties = getPropertyValuesByZip().get(zipCode);
 
-        return getAverage(new TotalLivableAreaReducer(properties), properties.size());
+        return properties == null ? 0.0 : getAverage(new TotalLivableAreaReducer(properties), properties.size());
     }
 
     /**

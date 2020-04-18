@@ -2,11 +2,10 @@ package edu.upenn.cit594.processor;
 
 import edu.upenn.cit594.data.PropertyValue;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class TotalLivableAreaReducer implements PropertyValueReducer {
-    List<PropertyValue> properties;
+    protected List<PropertyValue> properties;
 
     public TotalLivableAreaReducer(List<PropertyValue> properties) {
         this.properties = properties;
