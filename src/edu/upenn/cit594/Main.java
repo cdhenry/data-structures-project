@@ -1,6 +1,11 @@
 package edu.upenn.cit594;
 
+import edu.upenn.cit594.datamanagement.*;
 import edu.upenn.cit594.logging.Logger;
+import edu.upenn.cit594.processor.ParkingViolationProcessor;
+import edu.upenn.cit594.processor.PopulationProcessor;
+import edu.upenn.cit594.processor.PropertyValueProcessor;
+import edu.upenn.cit594.ui.CommandLineUserInterface;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,48 +21,68 @@ import java.io.FileReader;
  *
  */
 public class Main {
+    private PopulationReaderSSV popReader;
+    private PropertyValueReaderCSV propReader;
+    private ParkingViolationReader parkReader;
+    private PopulationProcessor popProcessor;
+    private PropertyValueProcessor propValProcessor;
+    private ParkingViolationProcessor parkProcessor;
+    private CommandLineUserInterface UI;
 
-    private static final String JSON = "json";
-    private static final String CSV = "csv";
-
-    public static void main(String[] args) {
-        if (args.length < 5) {
-            System.out
-                    .println("Usage: java Main [parking violations file format] [parking violations filename] " +
-                            "[property values filename] [population filename] [log filename]");
-            System.exit(0);
-        }
-
-        String parkingViolationsFileFormat = args[0].toLowerCase();
-        boolean isParkingViolationsJSON = parkingViolationsFileFormat.equals(JSON);
-        boolean isParkingViolationsCSV = parkingViolationsFileFormat.equals(CSV);
+    private void createReaders(String parkFileType, String parkFileName, String propFileName, String popFileName) {
+        //Determine parking violation file type
+        String parkingViolationsFileFormat = parkFileType.toLowerCase();
+        boolean isParkingViolationsJSON = parkingViolationsFileFormat.equals("json");
+        boolean isParkingViolationsCSV = parkingViolationsFileFormat.equals("csv");
 
         if (!(isParkingViolationsJSON || isParkingViolationsCSV)) {
             System.out.println("tweet format must be either 'json' or 'csv'");
             System.exit(0);
         }
 
+        //Create Readers
         try {
-            FileReader parkingViolationsFile = new FileReader(args[1]);
-            FileReader propertyValuesFile = new FileReader(args[2]);
-            FileReader populationFile = new FileReader(args[3]);
-            File logFile = new File(args[4]);
+            parkReader = isParkingViolationsCSV ?
+                    new ParkingViolationReaderCSV(new FileReader(parkFileName)) :
+                    new ParkingViolationReaderJSON(new FileReader(parkFileName));
+            popReader = new PopulationReaderSSV(new FileReader(popFileName));
+            propReader = new PropertyValueReaderCSV(new FileReader(propFileName));
 
-            if (logFile.exists() && !logFile.canWrite()) {
-                System.out.println("log file must be writeable");
-                System.exit(0);
-            }
-
-            // create the objects and their relationships
-            Logger.init(logFile);
-//            Reader reader = new CSVFileReader(filename);
-//            Processor processor = new Processor(reader);
-//            CommandLineUserInterface ui = new CommandLineUserInterface(processor);
-//
-//            ui.start();
         } catch (FileNotFoundException e) {
             System.out.println("tweet file and state file must exist and must be readable");
             System.exit(0);
         }
+    }
+
+    private void createProcessors() {
+        parkProcessor = new ParkingViolationProcessor(parkReader);
+        popProcessor = new PopulationProcessor(popReader);
+        propValProcessor = new PropertyValueProcessor(propReader);
+    }
+
+    private void createLogger(String logFileName) {
+        File logFile = new File(logFileName);
+        if (logFile.exists() && !logFile.canWrite()) {
+            System.out.println("log file must be writeable");
+            System.exit(0);
+        }
+        Logger.init(logFile);
+    }
+
+    public static void main(String[] args) {
+//        if (args.length < 5) {
+//            System.out
+//                    .println("Usage: java Main [parking violations file format] [parking violations filename] " +
+//                            "[property values filename] [population filename] [log filename]");
+//            System.exit(0);
+//        }
+
+        String arg[] = {"json", "parking.json", "properties.csv", "population.txt", "log.txt"};
+        Main main = new Main();
+        main.createReaders(arg[0], arg[1], arg[2], arg[3]);
+        main.createProcessors();
+        main.createLogger(arg[4]);
+        main.UI = new CommandLineUserInterface(main.parkProcessor, main.popProcessor, main.propValProcessor);
+        main.UI.start();
     }
 }

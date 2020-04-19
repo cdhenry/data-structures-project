@@ -33,13 +33,18 @@ public class PopulationReaderSSV {
      */
     public List<Population> getAllPopulations() {
         List<Population> populations = new ArrayList<Population>();
-
         try (Scanner in = new Scanner(file)) {
 
             while (in.hasNextLine()) {
                 String population = in.nextLine();
                 String[] populationArray = population.split(SPACE);
-
+                if (populationArray.length != 2) {
+                    continue;
+                }
+                String zipFirstFive = populationArray[0].substring(0, 5);
+                int populationSize = Integer.parseInt(populationArray[1]);
+                Population newPopulation = new Population(zipFirstFive, populationSize);
+                populations.add(newPopulation);
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);

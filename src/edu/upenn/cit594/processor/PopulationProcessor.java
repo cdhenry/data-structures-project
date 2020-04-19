@@ -29,6 +29,10 @@ public class PopulationProcessor {
      * @return total population
      */
     public long getTotalPopulation() {
-        return 0;
+        int totalPopulation = 0;
+        for (Population pop : populations) {
+            totalPopulation += pop.getPopulation();
+        }
+        return totalPopulation;
     }
 }
