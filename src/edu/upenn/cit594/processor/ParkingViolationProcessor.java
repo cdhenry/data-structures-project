@@ -14,6 +14,7 @@ public class ParkingViolationProcessor {
     protected ParkingViolationReader parkingViolationReader;
     protected List<ParkingViolation> parkingViolations;
     protected Map<Integer, List<ParkingViolation>> parkingViolationsByZip;
+    protected Map<Integer, Double> totalFinesPerCapita;
 
     /**
      * Constructs a ParkingViolationProcessor to store a set of ParkingViolation objects created by the
@@ -25,6 +26,7 @@ public class ParkingViolationProcessor {
         this.parkingViolationReader = parkingViolationReader;
         this.parkingViolations = parkingViolationReader.getAllParkingViolations();
         this.parkingViolationsByZip = new HashMap<>();
+        this.totalFinesPerCapita = new HashMap<>();
     }
 
     /**
@@ -50,24 +52,26 @@ public class ParkingViolationProcessor {
      * @return total fine per capita
      */
     public Map<Integer, Double> getTotalFinesPerCapita(Map<Integer, Integer> populations) {
-        Map<Integer, Double> totalFinesPerCapita = new HashMap<>();
+        if (totalFinesPerCapita.isEmpty()) {
 
-        for (Map.Entry<Integer, Integer> entry : populations.entrySet()) {
-            int zipCode = entry.getKey();
-            int population = entry.getValue();
-            List<ParkingViolation> violations = getParkingViolationsByZip().get(zipCode);
+            for (Map.Entry<Integer, Integer> entry : populations.entrySet()) {
+                int zipCode = entry.getKey();
+                int population = entry.getValue();
+                if (getParkingViolationsByZip().containsKey(zipCode)) {
+                    List<ParkingViolation> violations = getParkingViolationsByZip().get(zipCode);
+                    if (violations == null) {
+                        continue;
+                    }
 
-            if (violations == null) {
-                continue;
+                    double totalFines = 0.0;
+
+                    for (ParkingViolation violation : violations) {
+                        totalFines += violation.getFineInDollars();
+                    }
+
+                    totalFinesPerCapita.put(zipCode, totalFines / population);
+                }
             }
-
-            double totalFines = 0.0;
-
-            for (ParkingViolation violation : violations) {
-                totalFines += violation.getFineInDollars();
-            }
-
-            totalFinesPerCapita.put(zipCode, totalFines / population);
         }
 
         return totalFinesPerCapita;
