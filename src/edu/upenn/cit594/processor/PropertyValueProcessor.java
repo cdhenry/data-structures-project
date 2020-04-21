@@ -67,7 +67,7 @@ public class PropertyValueProcessor {
 
         if (getPropertyValuesByZip().containsKey(zipCode)) {
             List<PropertyValue> properties = getPropertyValuesByZip().get(zipCode);
-            if (properties == null) {
+            if (properties == null || properties.isEmpty()) {
                 totalResidentialMarketValuePerCapitaByZip.put(zipCode, 0.0);
                 return 0.0;
             }
@@ -93,7 +93,7 @@ public class PropertyValueProcessor {
 
         if (getPropertyValuesByZip().containsKey(zipCode)) {
             List<PropertyValue> properties = getPropertyValuesByZip().get(zipCode);
-            if (properties == null) {
+            if (properties == null || properties.isEmpty()) {
                 averageResidentialMarketValueByZip.put(zipCode, 0.0);
                 return 0.0;
             }
@@ -119,7 +119,7 @@ public class PropertyValueProcessor {
 
         if (getPropertyValuesByZip().containsKey(zipCode)) {
             List<PropertyValue> properties = getPropertyValuesByZip().get(zipCode);
-            if (properties == null) {
+            if (properties == null || properties.isEmpty()) {
                 averageResidentialTotalLivableAreaByZip.put(zipCode, 0.0);
                 return 0.0;
             }
