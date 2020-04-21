@@ -19,6 +19,7 @@ import java.util.regex.Matcher;
 public class ParkingViolationReaderCSV implements ParkingViolationReader {
     private static final String FILE_ERR_MSG = "parking violation file must exist and be readable";
     private static final String DATE_PARSE_ERR_MSG = "parking violation date parse error";
+    private static final int VIOLATION_PROPERTY_COUNT = 7;
     protected String filename;
 
     /**
@@ -43,7 +44,7 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
                 String parkingViolation = in.nextLine();
                 String[] parkingViolationArray = parkingViolation.trim().split(CommonConstant.COMMA_REGEX);
 
-                if (parkingViolationArray.length != 7) {
+                if (parkingViolationArray.length != VIOLATION_PROPERTY_COUNT) {
                     continue;
                 }
 
