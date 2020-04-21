@@ -70,7 +70,6 @@ public class PopulationReaderSSV {
 
             } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {}
         }
-
         return populationsMap;
     }
 }

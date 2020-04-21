@@ -25,7 +25,7 @@ public class PopulationProcessor {
     }
 
     /**
-     * @return total population, -1 for error
+     * @return total population
      */
     public int getTotalPopulation() {
         // Calculated during read
