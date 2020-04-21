@@ -12,8 +12,8 @@ import java.util.*;
  */
 public class ParkingViolationProcessor {
     protected ParkingViolationReader parkingViolationReader;
-    protected List<ParkingViolation> parkingViolations;
-    protected Map<Integer, List<ParkingViolation>> parkingViolationsByZip;
+    protected Map<Integer, List<ParkingViolation>> parkingViolationsMap;
+    protected Map<Integer, Double> totalFinesPerZip;
 
     /**
      * Constructs a ParkingViolationProcessor to store a set of ParkingViolation objects created by the
@@ -23,53 +23,53 @@ public class ParkingViolationProcessor {
      */
     public ParkingViolationProcessor(ParkingViolationReader parkingViolationReader) {
         this.parkingViolationReader = parkingViolationReader;
-        this.parkingViolations = parkingViolationReader.getAllParkingViolations();
-        this.parkingViolationsByZip = new HashMap<>();
+        this.parkingViolationsMap = parkingViolationReader.getAllParkingViolations();
+        this.totalFinesPerZip = new HashMap<>();
     }
 
     /**
      * @return parking violations by zip code
      */
     public Map<Integer, List<ParkingViolation>> getParkingViolationsByZip() {
-        if (parkingViolationsByZip.isEmpty()) {
-
-            for (ParkingViolation violation : parkingViolations) {
-                int zipCode = violation.getZipCode();
-                List<ParkingViolation> violations = parkingViolationsByZip.containsKey(zipCode) ?
-                        parkingViolationsByZip.get(zipCode) : new LinkedList<ParkingViolation>();
-
-                violations.add(violation);
-                parkingViolationsByZip.put(zipCode, violations);
-            }
-        }
-
-        return parkingViolationsByZip;
+        return parkingViolationsMap;
     }
 
     /**
-     * @return total fine per capita
+     * @return total memoized fines for zip code
      */
-    public Map<Integer, Double> getTotalFinesPerCapita(Map<Integer, Integer> populations) {
-        Map<Integer, Double> totalFinesPerCapita = new HashMap<>();
 
-        for (Map.Entry<Integer, Integer> entry : populations.entrySet()) {
-            int zipCode = entry.getKey();
-            int population = entry.getValue();
+    public double getTotalFinesPerCapita(int zipCode, int population) {
+        Double totalFines = getTotalFinesByZip(zipCode);
+        return totalFines / population;
+    }
+
+    /**
+     * @return total memoized fines for zip code
+     */
+    private double getTotalFinesByZip(int zipCode) {
+        if (!totalFinesPerZip.containsKey(zipCode)) {
             List<ParkingViolation> violations = getParkingViolationsByZip().get(zipCode);
-
-            if (violations == null) {
-                continue;
-            }
-
             double totalFines = 0.0;
 
-            for (ParkingViolation violation : violations) {
-                totalFines += violation.getFineInDollars();
+            if (violations == null) {
+                totalFinesPerZip.put(zipCode, totalFines);
+                return totalFines;
             }
 
-            totalFinesPerCapita.put(zipCode, totalFines / population);
+            for (ParkingViolation violation : violations) {
+                if (violation.getVehicleState().equals("PA")) {
+                    totalFines += violation.getFineInDollars();
+                }
+            }
+            totalFinesPerZip.put(zipCode, totalFines);
         }
-
-        return totalFinesPerCapita;
+        return totalFinesPerZip.get(zipCode);
     }
+
+    public double getAvgFinePerCapita(int zipCode, int population) {
+        double totalFines = getTotalFinesByZip(zipCode);
+        return totalFines / population;
+    }
+
+
 }

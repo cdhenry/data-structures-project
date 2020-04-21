@@ -12,7 +12,7 @@ public class MarketValueReducer implements PropertyValueReducer {
     }
 
     @Override
-    public double reduce() {
+    public double getTotal() {
         double total = 0.0;
 
         for (PropertyValue property : this.properties) {

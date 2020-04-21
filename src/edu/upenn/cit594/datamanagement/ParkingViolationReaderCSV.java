@@ -4,8 +4,8 @@ import edu.upenn.cit594.data.CommonConstant;
 import edu.upenn.cit594.data.ParkingViolation;
 import edu.upenn.cit594.logging.Logger;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -19,7 +19,7 @@ import java.util.regex.Matcher;
 public class ParkingViolationReaderCSV implements ParkingViolationReader {
     private static final String FILE_ERR_MSG = "parking violation file must exist and be readable";
     private static final String DATE_PARSE_ERR_MSG = "parking violation date parse error";
-    protected String filename;
+    protected Scanner readIn;
 
     /**
      * Takes in a filename and stores it for use on a comma separated text file
@@ -27,22 +27,26 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
      * @param filename a CSV filename for a parking violation file
      */
     public ParkingViolationReaderCSV(String filename) {
-        this.filename = filename;
-    }
-
-    @Override
-    public List<ParkingViolation> getAllParkingViolations() {
-        List<ParkingViolation> parkingViolations = new LinkedList<ParkingViolation>();
-
         try {
             FileReader file = new FileReader(filename);
             Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), filename));
-            Scanner in = new Scanner(file);
+            readIn = new Scanner(file);
 
-            while (in.hasNextLine()) {
-                String parkingViolation = in.nextLine();
-                String[] parkingViolationArray = parkingViolation.trim().split(CommonConstant.COMMA_REGEX);
+        } catch (IOException e) {
+            System.out.println(FILE_ERR_MSG);
+            System.exit(4);
+        }
+    }
 
+    @Override
+    public Map<Integer, List<ParkingViolation>> getAllParkingViolations() {
+        Map<Integer, List<ParkingViolation>> parkingViolationsMap = new HashMap<>();
+
+        while (readIn.hasNextLine()) {
+            String parkingViolation = readIn.nextLine();
+            String[] parkingViolationArray = parkingViolation.trim().split(CommonConstant.COMMA_REGEX);
+
+            try {
                 String timeString = parkingViolationArray[0].trim();
                 if (timeString.length() == 0) {
                     continue;
@@ -83,15 +87,28 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
 
                 Date timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeString);
 
-                parkingViolations.add(new ParkingViolation(timeStamp, Double.parseDouble(fine), violation, plateId,
-                        state, Integer.parseInt(ticketNumber), Integer.parseInt(zipCode)));
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println(FILE_ERR_MSG);
-        } catch (ParseException e) {
-            System.out.println(DATE_PARSE_ERR_MSG);
-        }
+                ParkingViolation newParkingViolation = new ParkingViolation(timeStamp, Double.parseDouble(fine) , violation,
+                        plateId, state, Integer.parseInt(ticketNumber), Integer.parseInt(zipCode));
 
-        return parkingViolations;
+                updateMap(parkingViolationsMap, newParkingViolation, newParkingViolation.getZipCode());
+
+            } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+
+            } catch (ParseException e) {
+                System.out.println(DATE_PARSE_ERR_MSG);
+            }
+        }
+        return parkingViolationsMap;
     }
+
+    private void updateMap(Map<Integer, List<ParkingViolation>> map, ParkingViolation pv, int zip) {
+        if (map.containsKey(zip)) {
+            map.get(zip).add(pv);
+        } else {
+            List<ParkingViolation> parkingViolations = new LinkedList<>();
+            parkingViolations.add(pv);
+            map.put(zip, parkingViolations);
+        }
+    }
+
 }

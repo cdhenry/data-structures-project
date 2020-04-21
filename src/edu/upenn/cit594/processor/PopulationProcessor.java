@@ -1,10 +1,7 @@
 package edu.upenn.cit594.processor;
 
-import edu.upenn.cit594.data.Population;
 import edu.upenn.cit594.datamanagement.PopulationReaderSSV;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,8 +11,8 @@ import java.util.Map;
  */
 public class PopulationProcessor {
     protected PopulationReaderSSV populationReader;
-    protected List<Population> populationsList;
-    protected HashMap<Integer, Integer> populationsByZip;
+    protected Map<Integer, Integer> populationsMap;
+    protected int totalPopulation;
 
     /**
      * Constructs a Population to store a set of Population objects created by the PopulationReader class
@@ -24,38 +21,29 @@ public class PopulationProcessor {
      */
     public PopulationProcessor(PopulationReaderSSV populationReader) {
         this.populationReader = populationReader;
-        this.populationsList = populationReader.getAllPopulations();
-        this.populationsByZip = new HashMap<>();
+        this.populationsMap = populationReader.getAllPopulations(totalPopulation);
     }
 
     /**
      * @return total population, -1 for error
      */
     public int getTotalPopulation() {
-        int totalPopulation = -1;
-        for (Population population : populationsList) {
-            totalPopulation += population.getPopulation();
-        }
+        // Calculated during read
         return totalPopulation;
     }
 
+
     /**
-     * @return list of all populations
+     * @return population for zip code
      */
-    public List<Population> getPopulationsList() {
-        return populationsList;
+    public int getPopulationsByZip(int zipCode) {
+        if (populationsMap.containsKey(zipCode)) {
+            return populationsMap.get(zipCode);
+        }
+        return -1;
     }
 
-    /**
-     * @return list of all populations
-     */
-    public Map<Integer, Integer> getPopulationsByZip() {
-        if (populationsByZip.isEmpty()) {
-            for (Population population : populationsList) {
-                populationsByZip.put(population.getZipCode(), population.getPopulation());
-            }
-        }
-
-        return populationsByZip;
+    public Map<Integer, Integer> getPopulationsMap() {
+        return populationsMap;
     }
 }
