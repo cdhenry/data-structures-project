@@ -172,8 +172,10 @@ public class CommandLineUserInterface {
      * Prints average residential market value per capita for provided zip code
      */
     private void printTotalResidentialMarketValuePerCapita(int zipCode) {
-        int populationCount = populationProcessor.getPopulationsByZip().get(zipCode);
-        int total = (int) propertyValueProcessor.getTotalResidentialMarketValuePerCapita(zipCode, populationCount);
+        int populationCount = populationProcessor.getPopulationsByZip().containsKey(zipCode) ?
+                populationProcessor.getPopulationsByZip().get(zipCode) : 0;
+        int total = populationCount > 0 ?
+                (int) propertyValueProcessor.getTotalResidentialMarketValuePerCapita(zipCode, populationCount) : 0;
         System.out.printf("%d\n", total);
     }
 
