@@ -53,14 +53,14 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        if (args.length < 5) {
-            System.out.println(USAGE_ERR_MSG);
-            System.exit(1);
-        }
+//        if (args.length < 5) {
+//            System.out.println(USAGE_ERR_MSG);
+//            System.exit(1);
+//        }
 
-//        String[] arg = {"csv","parking.csv","properties.csv","population.txt","log.txt"};
+        String[] arg = {"csv","parking.csv","properties.csv","population.txt","log.txt"};
 
-        String parkingViolationsFileFormat = args[0];
+        String parkingViolationsFileFormat = arg[0];
         boolean isParkingViolationsJSON = parkingViolationsFileFormat.equals(JSON);
         boolean isParkingViolationsCSV = parkingViolationsFileFormat.equals(CSV);
 
@@ -69,17 +69,17 @@ public class Main {
             System.exit(2);
         }
 
-        File logFile = new File(args[4]);
+        File logFile = new File(arg[4]);
         if (logFile.exists() && !logFile.canWrite()) {
             System.out.println(LOG_FILE_ERR_MSG);
             System.exit(3);
         }
 
         Logger.init(logFile);
-        Logger.getInstance().log(String.format("%d %s %s %s %s %s\n", System.currentTimeMillis(), args[0], args[1],
-                args[2], args[3], args[4]));
+        Logger.getInstance().log(String.format("%d %s %s %s %s %s\n", System.currentTimeMillis(), arg[0], arg[1],
+                arg[2], arg[3], arg[4]));
 
-        createReaders(isParkingViolationsJSON, args[1], args[2], args[3]);
+        createReaders(isParkingViolationsJSON, arg[1], arg[2], arg[3]);
         createProcessors();
         createCLI();
 

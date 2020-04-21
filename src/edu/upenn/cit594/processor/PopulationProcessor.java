@@ -21,14 +21,20 @@ public class PopulationProcessor {
      */
     public PopulationProcessor(PopulationReaderSSV populationReader) {
         this.populationReader = populationReader;
-        this.populationsMap = populationReader.getAllPopulations(totalPopulation);
+        this.populationsMap = populationReader.getAllPopulations();
     }
 
     /**
      * @return total population
      */
     public int getTotalPopulation() {
-        // Calculated during read
+        if (totalPopulation <= 0) {
+            totalPopulation = 0;
+            for (Map.Entry<Integer, Integer> entry: populationsMap.entrySet()) {
+                int population = entry.getValue();
+                totalPopulation += population;
+            }
+        }
         return totalPopulation;
     }
 

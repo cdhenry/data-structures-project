@@ -42,9 +42,8 @@ public class PopulationReaderSSV {
      *
      * @return a list of population objects
      */
-    public Map<Integer, Integer> getAllPopulations(int totalPopulation) {
+    public Map<Integer, Integer> getAllPopulations() {
         Map<Integer, Integer> populationsMap = new TreeMap<>();
-        totalPopulation = 0;
 
         while (readIn.hasNextLine()) {
             String population = readIn.nextLine();
@@ -65,7 +64,6 @@ public class PopulationReaderSSV {
                 }
 
                 Population newPopulation = new Population(Integer.parseInt(zipCode), Integer.parseInt(populationCount));
-                totalPopulation += newPopulation.getPopulation();
                 populationsMap.put(newPopulation.getZipCode(), newPopulation.getPopulation());
 
             } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {}
