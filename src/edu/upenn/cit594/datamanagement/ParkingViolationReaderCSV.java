@@ -43,6 +43,10 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
                 String parkingViolation = in.nextLine();
                 String[] parkingViolationArray = parkingViolation.trim().split(CommonConstant.COMMA_REGEX);
 
+                if (parkingViolationArray.length != 7) {
+                    continue;
+                }
+
                 String timeString = parkingViolationArray[0].trim();
                 if (timeString.length() == 0) {
                     continue;
