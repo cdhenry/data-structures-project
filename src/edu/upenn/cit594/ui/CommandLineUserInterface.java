@@ -188,13 +188,14 @@ public class CommandLineUserInterface {
     }
 
     /**
-     * CUSTOM FUNCTION: Prints total market value over average fine per capita
+     * CUSTOM FUNCTION: Prints total market value for zip code over average fine per capita
      */
     private void printMarketValOverAvgFinePerCapita(int zipCode) {
-        double totalMarketValue = propertyValueProcessor.getTotalMarketValueByZip(zipCode);
         int populationCount = populationProcessor.getPopulationsByZip(zipCode);
+        double avgMarketValPerCapita = propertyValueProcessor.getTotalMarketValueByZip(zipCode) / populationCount;
         double avgFinePerCapita = parkingViolationProcessor.getAvgFinePerCapita(zipCode, populationCount);
-        System.out.printf("%04.4f\n", totalMarketValue / avgFinePerCapita);
+
+        System.out.printf("%04.4f\n", avgMarketValPerCapita / avgFinePerCapita);
     }
 
     private void printError() {
