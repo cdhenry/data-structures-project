@@ -24,8 +24,7 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
     private static final String FILE_ERR_MSG = "parking violation file must exist and be readable";
     private static final String DATE_PARSE_ERR_MSG = "parking violation date parse error";
     private static final String JSON_PARSE_ERR_MSG = "parking violation JSON parse error";
-    protected String filename;
-    protected JSONParser parser;
+    protected JSONArray parkingViolationsJSON;
 
     /**
      * Takes in a filename and stores it for use on the json parser
@@ -33,23 +32,30 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
      * @param filename a JSON filename for a parking violation file
      */
     public ParkingViolationReaderJSON(String filename) {
-        this.filename = filename;
-        this.parser = new JSONParser();
-    }
-
-    @Override
-    public List<ParkingViolation> getAllParkingViolations() {
-        List<ParkingViolation> parkingViolations = new LinkedList<ParkingViolation>();
-
         try {
             FileReader file = new FileReader(filename);
             Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), filename));
+            JSONParser parser = new JSONParser();
+            parkingViolationsJSON = (JSONArray) parser.parse(file);
 
-            JSONArray parkingViolationsJSON = (JSONArray) parser.parse(file);
+        } catch (FileNotFoundException e) {
+            System.out.println(FILE_ERR_MSG);
+            System.exit(4);
 
-            for (Object o : parkingViolationsJSON) {
-                JSONObject parkingViolation = (JSONObject) o;
+        } catch (IOException | ParseException e) {
+            System.out.println(JSON_PARSE_ERR_MSG);
+            System.exit(4);
+        }
+    }
 
+    @Override
+    public Map<Integer, List<ParkingViolation>> getAllParkingViolations() {
+        Map<Integer, List<ParkingViolation>>  parkingViolationsMap = new HashMap<>();
+
+        for (Object o : parkingViolationsJSON) {
+            JSONObject parkingViolation = (JSONObject) o;
+
+            try {
                 long ticketNumber = (Long) parkingViolation.get("ticket_number");
                 long fine = (Long) parkingViolation.get("fine");
 
@@ -83,17 +89,28 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
 
                 Date timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeString);
 
-                parkingViolations.add(new ParkingViolation(timeStamp, new Long(fine).doubleValue(), violation,
-                        plateId, state, new Long(ticketNumber).intValue(), Integer.parseInt(zipCode)));
+                ParkingViolation newParkingViolation = new ParkingViolation(timeStamp, new Long(fine).doubleValue(), violation,
+                        plateId, state, new Long(ticketNumber).intValue(), Integer.parseInt(zipCode));
+
+                updateMap(parkingViolationsMap, newParkingViolation, newParkingViolation.getZipCode());
+
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+
+            } catch (java.text.ParseException e) {
+                System.out.println(DATE_PARSE_ERR_MSG);
             }
-        } catch (ParseException e) {
-            System.out.println(DATE_PARSE_ERR_MSG);
-        } catch (FileNotFoundException e) {
-            System.out.println(FILE_ERR_MSG);
-        } catch (IOException | java.text.ParseException e) {
-            System.out.println(JSON_PARSE_ERR_MSG);
         }
 
-        return parkingViolations;
+        return parkingViolationsMap;
+    }
+
+    private void updateMap(Map<Integer, List<ParkingViolation>> map, ParkingViolation pv, int zip) {
+        if (map.containsKey(zip)) {
+            map.get(zip).add(pv);
+        } else {
+            List<ParkingViolation> parkingViolations = new LinkedList<>();
+            parkingViolations.add(pv);
+            map.put(zip, parkingViolations);
+        }
     }
 }

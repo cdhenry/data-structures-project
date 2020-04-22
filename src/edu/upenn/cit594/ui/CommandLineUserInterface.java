@@ -18,6 +18,7 @@ public class CommandLineUserInterface {
     protected ParkingViolationProcessor parkingViolationProcessor;
     protected PopulationProcessor populationProcessor;
     protected PropertyValueProcessor propertyValueProcessor;
+    protected Logger logger;
     protected Scanner in;
 
     /**
@@ -35,6 +36,7 @@ public class CommandLineUserInterface {
         this.populationProcessor = populationProcessor;
         this.propertyValueProcessor = propertyValueProcessor;
         in = new Scanner(System.in);
+        logger = Logger.getInstance();
     }
 
     /**
@@ -48,7 +50,7 @@ public class CommandLineUserInterface {
                 while (choice != 0) {
                     printInstructions();
                     choice = in.nextInt();
-                    Logger.getInstance().log(String.format("%d %d\n", System.currentTimeMillis(), choice));
+                    logUserEntry(choice);
                     performAction(choice);
                 }
                 break;
@@ -85,10 +87,11 @@ public class CommandLineUserInterface {
                 printTotalResidentialMarketValuePerCapita(getZipCode());
                 break;
             case 6:
-                printCUSTOM();
+                printMarketValOverAvgFinePerCapita(getZipCode());
                 break;
             default:
                 printError();
+                System.exit(5);
                 break;
         }
     }
@@ -105,7 +108,7 @@ public class CommandLineUserInterface {
             try {
                 System.out.print("Enter zip code: ");
                 zipCode = in.nextInt();
-                Logger.getInstance().log(String.format("%d %d\n", System.currentTimeMillis(), zipCode));
+                logUserEntry(zipCode);
                 break;
             } catch (InputMismatchException e) {
                 printError();
@@ -140,17 +143,16 @@ public class CommandLineUserInterface {
      * Prints total fines per capita for each zip code
      */
     private void printTotalFinesPerCapita() {
-        Map<Integer, Double> totalFinesPerCapita = parkingViolationProcessor.getTotalFinesPerCapita(
-                populationProcessor.getPopulationsByZip());
+        for (Map.Entry<Integer, Integer> entry : populationProcessor.getPopulationsMap().entrySet()) {
+            int zipCode = entry.getKey();
+            int population = entry.getValue();
 
-        if (totalFinesPerCapita == null) {
-            return;
-        }
-
-        for (Map.Entry<Integer, Double> entry : totalFinesPerCapita.entrySet()) {
-            int key = entry.getKey();
-            double value = entry.getValue();
-            System.out.printf("%d %04.4f\n", key, value);
+            if (population > 0) {
+                double totalFinePerCapita = parkingViolationProcessor.getTotalFinesPerCapita(zipCode, population);
+                if (totalFinePerCapita > 0) {
+                    System.out.printf("%d %04.4f\n", zipCode, totalFinePerCapita);
+                }
+            }
         }
     }
 
@@ -172,19 +174,32 @@ public class CommandLineUserInterface {
      * Prints average residential market value per capita for provided zip code
      */
     private void printTotalResidentialMarketValuePerCapita(int zipCode) {
-        int populationCount = populationProcessor.getPopulationsByZip().containsKey(zipCode) ?
-                populationProcessor.getPopulationsByZip().get(zipCode) : 0;
-        int total = populationCount > 0 ?
-                (int) propertyValueProcessor.getTotalResidentialMarketValuePerCapita(zipCode, populationCount) : 0;
+        int populationCount = populationProcessor.getPopulationsByZip(zipCode);
+        int total = 0;
+        if (populationCount > 0) {
+            total = (int) propertyValueProcessor.getTotalResidentialMarketValuePerCapita(zipCode, populationCount);
+        }
+
         System.out.printf("%d\n", total);
     }
 
-    // TODO: CUSTOM FEATURE
-    private void printCUSTOM() {
+    /**
+     * CUSTOM FUNCTION: Prints total market value for zip code over average fine per capita
+     */
+    private void printMarketValOverAvgFinePerCapita(int zipCode) {
+        int populationCount = populationProcessor.getPopulationsByZip(zipCode);
+        double avgMarketValPerCapita = propertyValueProcessor.getTotalMarketValueByZip(zipCode) / populationCount;
+        double avgFinePerCapita = parkingViolationProcessor.getAvgFinePerCapita(zipCode, populationCount);
 
+        System.out.printf("%04.4f\n", avgMarketValPerCapita / avgFinePerCapita);
     }
 
     private void printError() {
-        System.out.println("Invalid Input, please try again.");
+        System.out.println("Error: Invalid Input");
     }
+
+    private void logUserEntry(int input) {
+        logger.log(String.format("%d %d\n", System.currentTimeMillis(), input));
+    }
+
 }

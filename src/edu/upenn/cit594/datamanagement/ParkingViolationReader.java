@@ -3,6 +3,7 @@ package edu.upenn.cit594.datamanagement;
 import edu.upenn.cit594.data.ParkingViolation;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * An interface used to specify the methods for getting parking violations from a file
@@ -15,5 +16,5 @@ public interface ParkingViolationReader {
      *
      * @return a list of parking violation objects
      */
-    List<ParkingViolation> getAllParkingViolations();
+    Map<Integer, List<ParkingViolation>> getAllParkingViolations();
 }

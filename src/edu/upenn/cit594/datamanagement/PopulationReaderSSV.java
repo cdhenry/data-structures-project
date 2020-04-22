@@ -6,7 +6,10 @@ import edu.upenn.cit594.logging.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.*;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 
 /**
@@ -16,7 +19,7 @@ import java.util.regex.Matcher;
  */
 public class PopulationReaderSSV {
     private static final String FILE_ERR_MSG = "population file must exist and be readable";
-    protected String filename;
+    protected Scanner readIn;
 
     /**
      * Takes in a filename and stores it for use on a comma separated text file
@@ -24,7 +27,15 @@ public class PopulationReaderSSV {
      * @param filename an SSV filename for a population file
      */
     public PopulationReaderSSV(String filename) {
-        this.filename = filename;
+        try {
+            FileReader file = new FileReader(filename);
+            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), filename));
+            readIn = new Scanner(file);
+
+        } catch (IOException e) {
+            System.out.println(FILE_ERR_MSG);
+            System.exit(4);
+        }
     }
 
     /**
@@ -32,18 +43,14 @@ public class PopulationReaderSSV {
      *
      * @return a list of population objects
      */
-    public List<Population> getAllPopulations() {
-        List<Population> populations = new LinkedList<>();
+    public Map<Integer, Integer> getAllPopulations() {
+        Map<Integer, Integer> populationsMap = new TreeMap<>();
 
-        try {
-            FileReader file = new FileReader(filename);
-            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), filename));
-            Scanner in = new Scanner(file);
+        while (readIn.hasNextLine()) {
+            String population = readIn.nextLine();
+            String[] populationArray = population.trim().split(CommonConstant.SPACE_REGEX);
 
-            while (in.hasNextLine()) {
-                String population = in.nextLine();
-                String[] populationArray = population.trim().split(CommonConstant.SPACE_REGEX);
-
+            try {
                 String zipCode = populationArray[0].trim();
                 Matcher m = CommonConstant.ZIP_CODE_PATTERN.matcher(zipCode);
                 if (m.find()) {
@@ -57,12 +64,11 @@ public class PopulationReaderSSV {
                     continue;
                 }
 
-                populations.add(new Population(Integer.parseInt(zipCode), Integer.parseInt(populationCount)));
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println(FILE_ERR_MSG);
-        }
+                Population newPopulation = new Population(Integer.parseInt(zipCode), Integer.parseInt(populationCount));
+                populationsMap.put(newPopulation.getZipCode(), newPopulation.getPopulation());
 
-        return populations;
+            } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {}
+        }
+        return populationsMap;
     }
 }

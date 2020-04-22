@@ -18,7 +18,6 @@ import java.io.File;
  * @author Chris Henry + Tim Chung
  */
 public class Main {
-
     private static final String JSON = "json";
     private static final String CSV = "csv";
 
@@ -59,7 +58,9 @@ public class Main {
             System.exit(1);
         }
 
-        String parkingViolationsFileFormat = args[0].toLowerCase();
+        String[] arg = {"csv","parking.csv","properties.csv","population.txt","log.txt"};
+
+        String parkingViolationsFileFormat = arg[0];
         boolean isParkingViolationsJSON = parkingViolationsFileFormat.equals(JSON);
         boolean isParkingViolationsCSV = parkingViolationsFileFormat.equals(CSV);
 

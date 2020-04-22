@@ -3,8 +3,6 @@ package edu.upenn.cit594.processor;
 import edu.upenn.cit594.data.PropertyValue;
 import edu.upenn.cit594.datamanagement.PropertyValueReaderCSV;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,11 +13,7 @@ import java.util.Map;
  */
 public class PropertyValueProcessor {
     protected PropertyValueReaderCSV propertyValueReader;
-    protected List<PropertyValue> propertyValues;
-    protected Map<Integer, List<PropertyValue>> propertyValuesByZip;
-    protected Map<Integer, Double> averageResidentialMarketValueByZip;
-    protected Map<Integer, Double> averageResidentialTotalLivableAreaByZip;
-    protected Map<Integer, Double> totalResidentialMarketValuePerCapitaByZip;
+    protected Map<Integer, List<PropertyValue>> propertyValuesMap;
 
     /**
      * Constructs a PropertyValueProcessor to store a set of PropertyValue objects created by the
@@ -29,30 +23,14 @@ public class PropertyValueProcessor {
      */
     public PropertyValueProcessor(PropertyValueReaderCSV propertyValueReader) {
         this.propertyValueReader = propertyValueReader;
-        this.propertyValues = propertyValueReader.getAllPropertyValues();
-        this.propertyValuesByZip = new HashMap<>();
-        this.averageResidentialMarketValueByZip = new HashMap<>();
-        this.averageResidentialTotalLivableAreaByZip = new HashMap<>();
-        this.totalResidentialMarketValuePerCapitaByZip = new HashMap<>();
+        this.propertyValuesMap = propertyValueReader.getAllPropertyValues();
     }
 
     /**
      * @return property values by zip code
      */
-    public Map<Integer, List<PropertyValue>> getPropertyValuesByZip() {
-        if (propertyValuesByZip.isEmpty()) {
-
-            for (PropertyValue propertyValue : propertyValues) {
-                int zipCode = propertyValue.getZipCode();
-                List<PropertyValue> propertyValues = propertyValuesByZip.containsKey(zipCode) ?
-                        propertyValuesByZip.get(zipCode) : new LinkedList<>();
-
-                propertyValues.add(propertyValue);
-                propertyValuesByZip.put(zipCode, propertyValues);
-            }
-        }
-
-        return propertyValuesByZip;
+    public Map<Integer, List<PropertyValue>> getPropertyValuesMap() {
+        return propertyValuesMap;
     }
 
     /**
@@ -61,25 +39,9 @@ public class PropertyValueProcessor {
      * @return Total Residential Market Value Per Capita
      */
     public double getTotalResidentialMarketValuePerCapita(int zipCode, int populationCount) {
-        if (totalResidentialMarketValuePerCapitaByZip.containsKey(zipCode)) {
-            return totalResidentialMarketValuePerCapitaByZip.get(zipCode);
-        }
+        List<PropertyValue> properties = getPropertyValuesMap().get(zipCode);
 
-        if (getPropertyValuesByZip().containsKey(zipCode)) {
-            List<PropertyValue> properties = getPropertyValuesByZip().get(zipCode);
-            if (properties == null || properties.isEmpty()) {
-                totalResidentialMarketValuePerCapitaByZip.put(zipCode, 0.0);
-                return 0.0;
-            }
-
-            double total = getAverage(new MarketValueReducer(properties), populationCount);
-            totalResidentialMarketValuePerCapitaByZip.put(zipCode, total);
-
-            return total;
-        }
-
-        totalResidentialMarketValuePerCapitaByZip.put(zipCode, 0.0);
-        return 0.0;
+        return properties == null ? 0.0 : getAverage(getTotalMarketValueByZip(zipCode), populationCount);
     }
 
     /**
@@ -87,25 +49,9 @@ public class PropertyValueProcessor {
      * @return Average Residential Market Value
      */
     public double getAverageResidentialMarketValue(int zipCode) {
-        if (averageResidentialMarketValueByZip.containsKey(zipCode)) {
-            return averageResidentialMarketValueByZip.get(zipCode);
-        }
+        List<PropertyValue> properties = getPropertyValuesMap().get(zipCode);
 
-        if (getPropertyValuesByZip().containsKey(zipCode)) {
-            List<PropertyValue> properties = getPropertyValuesByZip().get(zipCode);
-            if (properties == null || properties.isEmpty()) {
-                averageResidentialMarketValueByZip.put(zipCode, 0.0);
-                return 0.0;
-            }
-
-            double total = getAverage(new MarketValueReducer(properties), properties.size());
-            averageResidentialMarketValueByZip.put(zipCode, total);
-
-            return total;
-        }
-
-        averageResidentialMarketValueByZip.put(zipCode, 0.0);
-        return 0.0;
+        return properties == null ? 0.0 : getAverage(getTotalMarketValueByZip(zipCode), properties.size());
     }
 
     /**
@@ -113,32 +59,44 @@ public class PropertyValueProcessor {
      * @return Average Residential Total Livable Area
      */
     public double getAverageResidentialTotalLivableArea(int zipCode) {
-        if (averageResidentialTotalLivableAreaByZip.containsKey(zipCode)) {
-            return averageResidentialTotalLivableAreaByZip.get(zipCode);
-        }
+        List<PropertyValue> properties = getPropertyValuesMap().get(zipCode);
 
-        if (getPropertyValuesByZip().containsKey(zipCode)) {
-            List<PropertyValue> properties = getPropertyValuesByZip().get(zipCode);
-            if (properties == null || properties.isEmpty()) {
-                averageResidentialTotalLivableAreaByZip.put(zipCode, 0.0);
-                return 0.0;
-            }
-
-            double total = getAverage(new TotalLivableAreaReducer(properties), properties.size());
-            averageResidentialTotalLivableAreaByZip.put(zipCode, total);
-
-            return total;
-        }
-
-        averageResidentialTotalLivableAreaByZip.put(zipCode, 0.0);
-        return 0.0;
+        return properties == null ? 0.0 : getAverage(getTotalLivableByZip(zipCode), properties.size());
     }
 
     /**
-     * @param reducer comparator to use when finding average
      * @return an average based on a zip code and a comparator
      */
-    private double getAverage(PropertyValueReducer reducer, int listSize) {
-        return reducer.reduce() / (double) listSize;
+    private double getAverage(double total, int size) {
+        return total / size;
     }
+
+
+    /**
+     * @return total market value for all residences in zip code
+     */
+    public double getTotalMarketValueByZip(int zipCode) {
+        List<PropertyValue> properties = getPropertyValuesMap().get(zipCode);
+
+        return getTotal(new MarketValueReducer(properties));
+    }
+
+    /**
+     * @return total livable area for all residences in zip code
+     */
+    public double getTotalLivableByZip(int zipCode) {
+        List<PropertyValue> properties = getPropertyValuesMap().get(zipCode);
+
+        return getTotal(new TotalLivableAreaReducer(properties));
+    }
+
+    /**
+     * @param reducer strategy pattern for acquiring totals by zip code
+     * @return total livable area for all residences in zip code
+     */
+    private double getTotal(PropertyValueReducer reducer) {
+        return reducer.getTotal();
+    }
+
+
 }
