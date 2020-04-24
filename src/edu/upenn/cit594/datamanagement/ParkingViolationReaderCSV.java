@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
  * @author Chris Henry + Tim Chung
  */
 public class ParkingViolationReaderCSV extends Reader implements ParkingViolationReader {
-    private static final String DATE_PARSE_ERR_MSG = "parking violation date parse error";
+    private static final int VIOLATION_PROPERTY_COUNT = 7;
 
     /**
      * Takes in a filename and stores it for use on a comma separated text file
@@ -79,12 +79,12 @@ public class ParkingViolationReaderCSV extends Reader implements ParkingViolatio
 
                 Date timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeString);
 
-                ParkingViolation newParkingViolation = new ParkingViolation(timeStamp, Double.parseDouble(fine) , violation,
+                ParkingViolation newParkingViolation = new ParkingViolation(timeStamp, Double.parseDouble(fine), violation,
                         plateId, state, Integer.parseInt(ticketNumber), Integer.parseInt(zipCode));
 
                 updateMap(parkingViolationsMap, newParkingViolation.getZipCode(), newParkingViolation);
 
-            } catch (ArrayIndexOutOfBoundsException | NumberFormatException |ParseException e) {
+            } catch (ArrayIndexOutOfBoundsException | NumberFormatException | ParseException e) {
             }
         }
         return parkingViolationsMap;

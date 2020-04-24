@@ -12,9 +12,9 @@ import java.util.Map;
  */
 public interface ParkingViolationReader {
     /**
-     * Gets a list of parking violations from a file
+     * Maps a set of parking violations from a file by their zip codes
      *
-     * @return a list of parking violation objects
+     * @return a map of parking violation objects by their zip codes
      */
     Map<Integer, List<ParkingViolation>> getAllParkingViolations();
 }

@@ -9,12 +9,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ *
+ */
 public abstract class Reader {
     private static final String FILE_ERR_MSG = "property value file must exist and be readable";
     protected Scanner readIn;
     protected FileReader file;
 
-    Reader(String filename) {
+    /**
+     * @param filename
+     */
+    public Reader(String filename) {
         try {
             FileReader file = new FileReader(filename);
             Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), filename));
@@ -25,6 +31,12 @@ public abstract class Reader {
         }
     }
 
+    /**
+     * @param map
+     * @param key
+     * @param value
+     * @param <V>
+     */
     public <V> void updateMap(Map<Integer, List<V>> map, Integer key, V value) {
         if (map.containsKey(key)) {
             map.get(key).add(value);

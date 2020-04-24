@@ -23,9 +23,9 @@ public class PopulationReaderSSV extends Reader {
     }
 
     /**
-     * Gets a list of populations from a file
+     * Maps a set of populations from a file by their zip codes
      *
-     * @return a list of population objects
+     * @return a map of population objects by their zip codes
      */
     public Map<Integer, Integer> getAllPopulations() {
         Map<Integer, Integer> populationsMap = new TreeMap<>();
@@ -51,7 +51,8 @@ public class PopulationReaderSSV extends Reader {
                 Population newPopulation = new Population(Integer.parseInt(zipCode), Integer.parseInt(populationCount));
                 populationsMap.put(newPopulation.getZipCode(), newPopulation.getPopulation());
 
-            } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {}
+            } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+            }
         }
         return populationsMap;
     }

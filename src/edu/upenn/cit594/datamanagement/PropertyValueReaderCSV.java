@@ -25,9 +25,9 @@ public class PropertyValueReaderCSV extends Reader {
     }
 
     /**
-     * Gets a list of property values from a file
+     * Maps a set of property values from a file by their zip codes
      *
-     * @return a list of property value objects
+     * @return a map of property value objects by their zip codes
      */
     public Map<Integer, List<PropertyValue>> getAllPropertyValues() {
         Map<Integer, List<PropertyValue>> propertyValuesMap = new HashMap<>();
@@ -82,7 +82,8 @@ public class PropertyValueReaderCSV extends Reader {
 
                 updateMap(propertyValuesMap, newPropertyValue.getZipCode(), newPropertyValue);
 
-            } catch (NumberFormatException e) {}
+            } catch (NumberFormatException e) {
+            }
         }
 
         return propertyValuesMap;

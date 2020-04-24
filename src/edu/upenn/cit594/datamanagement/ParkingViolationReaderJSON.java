@@ -21,7 +21,7 @@ import java.util.regex.Matcher;
  * @author Chris Henry + Tim Chung
  */
 public class ParkingViolationReaderJSON extends Reader implements ParkingViolationReader {
-    private static final String DATE_PARSE_ERR_MSG = "parking violation date parse error";
+    private static final String FILE_ERR_MSG = "parking violation file must exist and be readable";
     private static final String JSON_PARSE_ERR_MSG = "parking violation JSON parse error";
     protected JSONArray parkingViolationsJSON;
 
@@ -87,10 +87,7 @@ public class ParkingViolationReaderJSON extends Reader implements ParkingViolati
 
                 updateMap(parkingViolationsMap, newParkingViolation.getZipCode(), newParkingViolation);
 
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-
-            } catch (java.text.ParseException e) {
-                System.out.println(DATE_PARSE_ERR_MSG);
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException | java.text.ParseException e) {
             }
         }
 
