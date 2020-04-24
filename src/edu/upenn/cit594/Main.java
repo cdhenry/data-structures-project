@@ -26,6 +26,11 @@ public class Main {
     private static final String USAGE_ERR_MSG = "Usage: java Main [parking violations file format] " +
             "[parking violations filename] [property values filename] [population filename] [log filename]";
 
+    protected static String parkingViolationsFileFormat;
+    protected static String parkingViolationsFilename;
+    protected static String propertyValuesFilename;
+    protected static String populationFilename;
+    protected static String logFilename;
     protected static ParkingViolationReader parkingViolationReader;
     protected static PropertyValueReaderCSV propertyValueReader;
     protected static PopulationReaderSSV populationReader;
@@ -34,31 +39,20 @@ public class Main {
     protected static PopulationProcessor populationProcessor;
     protected static CommandLineUserInterface ui;
 
-    public static void createReaders(boolean isParkingViolationsJSON, String parkingViolationsFilename,
-                                     String propertyValuesFilename, String populationFilename) {
-        parkingViolationReader = isParkingViolationsJSON ? new ParkingViolationReaderJSON(parkingViolationsFilename) :
-                new ParkingViolationReaderCSV(parkingViolationsFilename);
-        propertyValueReader = new PropertyValueReaderCSV(propertyValuesFilename);
-        populationReader = new PopulationReaderSSV(populationFilename);
-    }
-
-    public static void createProcessors() {
-        parkingViolationProcessor = new ParkingViolationProcessor(parkingViolationReader);
-        propertyValueProcessor = new PropertyValueProcessor(propertyValueReader);
-        populationProcessor = new PopulationProcessor(populationReader);
-    }
-
-    public static void createCLI() {
-        ui = new CommandLineUserInterface(parkingViolationProcessor, populationProcessor, propertyValueProcessor);
-    }
-
+    /**
+     * Main program runner which controls which readers and processors to use based on file inputs determined by
+     * the program runner. Starts the user interface.
+     *
+     * @param args [parking violations file format] [parking violations filename] [property values filename]
+     *             [population filename] [log filename]
+     */
     public static void main(String[] args) {
         if (args.length < 5) {
             System.out.println(USAGE_ERR_MSG);
             System.exit(1);
         }
 
-        String parkingViolationsFileFormat = args[0];
+        parkingViolationsFileFormat = args[0];
         boolean isParkingViolationsJSON = parkingViolationsFileFormat.equals(JSON);
         boolean isParkingViolationsCSV = parkingViolationsFileFormat.equals(CSV);
 
@@ -67,20 +61,54 @@ public class Main {
             System.exit(2);
         }
 
-        File logFile = new File(args[4]);
+        parkingViolationsFilename = args[1];
+        propertyValuesFilename = args[2];
+        populationFilename = args[3];
+        logFilename = args[4];
+
+        File logFile = new File(logFilename);
         if (logFile.exists() && !logFile.canWrite()) {
             System.out.println(LOG_FILE_ERR_MSG);
             System.exit(3);
         }
 
         Logger.init(logFile);
-        Logger.getInstance().log(String.format("%d %s %s %s %s %s\n", System.currentTimeMillis(), args[0], args[1],
-                args[2], args[3], args[4]));
+        Logger.getInstance().log(String.format("%d %s %s %s %s %s\n", System.currentTimeMillis(),
+                parkingViolationsFileFormat, parkingViolationsFilename, propertyValuesFilename, populationFilename,
+                logFilename));
 
-        createReaders(isParkingViolationsJSON, args[1], args[2], args[3]);
+        createReaders(isParkingViolationsJSON);
         createProcessors();
         createCLI();
 
         ui.start();
+    }
+
+    /**
+     * Creates all necessary readers for the program
+     *
+     * @param isParkingViolationsJSON boolean to determine which parking violation reader to create
+     */
+    public static void createReaders(boolean isParkingViolationsJSON) {
+        parkingViolationReader = isParkingViolationsJSON ? new ParkingViolationReaderJSON(parkingViolationsFilename) :
+                new ParkingViolationReaderCSV(parkingViolationsFilename);
+        propertyValueReader = new PropertyValueReaderCSV(propertyValuesFilename);
+        populationReader = new PopulationReaderSSV(populationFilename);
+    }
+
+    /**
+     * Creates all necessary processors for the program
+     */
+    public static void createProcessors() {
+        parkingViolationProcessor = new ParkingViolationProcessor(parkingViolationReader);
+        propertyValueProcessor = new PropertyValueProcessor(propertyValueReader);
+        populationProcessor = new PopulationProcessor(populationReader);
+    }
+
+    /**
+     * Creates the Command Line Interface for the program
+     */
+    public static void createCLI() {
+        ui = new CommandLineUserInterface(parkingViolationProcessor, populationProcessor, propertyValueProcessor);
     }
 }
