@@ -10,6 +10,7 @@ import java.util.Map;
  * @author Chris Henry + Tim Chung
  */
 public class PopulationProcessor {
+    private static final int TOTAL_POPULATION_UNINITIALIZED = -1;
     protected PopulationReaderSSV populationReader;
     protected Map<Integer, Integer> populationsMap;
     protected int totalPopulation;
@@ -22,30 +23,33 @@ public class PopulationProcessor {
     public PopulationProcessor(PopulationReaderSSV populationReader) {
         this.populationReader = populationReader;
         this.populationsMap = populationReader.getAllPopulations();
+        this.totalPopulation = TOTAL_POPULATION_UNINITIALIZED;
     }
 
     /**
      * @return total population
      */
     public int getTotalPopulation() {
-        if (totalPopulation <= 0) {
-            totalPopulation = 0;
-            for (Map.Entry<Integer, Integer> entry: populationsMap.entrySet()) {
-                int population = entry.getValue();
-                totalPopulation += population;
+        if (totalPopulation == TOTAL_POPULATION_UNINITIALIZED) {
+            totalPopulation++;
+
+            for (Integer localPopulation : populationsMap.values()) {
+                totalPopulation += localPopulation;
             }
         }
+
         return totalPopulation;
     }
 
 
     /**
-     * @return population for zip code
+     * @return population for zip code, -1 if not found
      */
     public int getPopulationsByZip(int zipCode) {
         if (populationsMap.containsKey(zipCode)) {
             return populationsMap.get(zipCode);
         }
+
         return -1;
     }
 
