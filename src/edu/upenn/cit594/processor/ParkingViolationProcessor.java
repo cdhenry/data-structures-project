@@ -3,7 +3,10 @@ package edu.upenn.cit594.processor;
 import edu.upenn.cit594.data.ParkingViolation;
 import edu.upenn.cit594.datamanagement.ParkingViolationReader;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * Stores a list of ParkingViolation objects and contains methods for performing various operations on the list
@@ -13,7 +16,7 @@ import java.util.*;
 public class ParkingViolationProcessor {
     protected ParkingViolationReader parkingViolationReader;
     protected Map<Integer, List<ParkingViolation>> parkingViolationsMap;
-    protected Map<Integer, Double> totalFinesPerZip;
+    protected Map<Integer, Double> totalFinesByZip;
 
     /**
      * Constructs a ParkingViolationProcessor to store a set of ParkingViolation objects created by the
@@ -24,7 +27,7 @@ public class ParkingViolationProcessor {
     public ParkingViolationProcessor(ParkingViolationReader parkingViolationReader) {
         this.parkingViolationReader = parkingViolationReader;
         this.parkingViolationsMap = parkingViolationReader.getAllParkingViolations();
-        this.totalFinesPerZip = new HashMap<>();
+        this.totalFinesByZip = new HashMap<>();
     }
 
     /**
@@ -35,24 +38,30 @@ public class ParkingViolationProcessor {
     }
 
     /**
-     * @return total memoized fines for zip code
+     * @param zipCode         zip code to search for fines
+     * @param localPopulation population of the zip code
+     * @return total fines per capita by zip
      */
+    public double getTotalFinesPerCapita(int zipCode, int localPopulation) {
+        if (localPopulation > 0) {
+            Double totalFines = getTotalFinesByZip(zipCode);
+            return totalFines / localPopulation;
+        }
 
-    public double getTotalFinesPerCapita(int zipCode, int population) {
-        Double totalFines = getTotalFinesByZip(zipCode);
-        return totalFines / population;
+        return 0.0;
     }
 
     /**
-     * @return total memoized fines for zip code
+     * @param zipCode zip code to aggregate fines
+     * @return total fines in a certain zip code
      */
     private double getTotalFinesByZip(int zipCode) {
-        if (!totalFinesPerZip.containsKey(zipCode)) {
+        if (!totalFinesByZip.containsKey(zipCode)) {
             List<ParkingViolation> violations = getParkingViolationsByZip().get(zipCode);
             double totalFines = 0.0;
 
             if (violations == null) {
-                totalFinesPerZip.put(zipCode, totalFines);
+                totalFinesByZip.put(zipCode, totalFines);
                 return totalFines;
             }
 
@@ -61,15 +70,22 @@ public class ParkingViolationProcessor {
                     totalFines += violation.getFineInDollars();
                 }
             }
-            totalFinesPerZip.put(zipCode, totalFines);
+            totalFinesByZip.put(zipCode, totalFines);
         }
-        return totalFinesPerZip.get(zipCode);
+        return totalFinesByZip.get(zipCode);
     }
 
-    public double getAvgFinePerCapita(int zipCode, int population) {
-        double totalFines = getTotalFinesByZip(zipCode);
-        return totalFines / population;
+    /**
+     * @param zipCode         zip code to seek out aggregated fines
+     * @param localPopulation population of the passed in zip code
+     * @return average fines in a certain zip code divided by local population
+     */
+    public double getAvgFinePerCapita(int zipCode, int localPopulation) {
+        if (localPopulation > 0) {
+            double totalFines = getTotalFinesByZip(zipCode);
+            return totalFines / localPopulation;
+        }
+
+        return 0.0;
     }
-
-
 }
