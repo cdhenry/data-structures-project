@@ -2,17 +2,17 @@ package edu.upenn.cit594.datamanagement;
 
 import edu.upenn.cit594.data.CommonConstant;
 import edu.upenn.cit594.data.ParkingViolation;
-import edu.upenn.cit594.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 /**
@@ -20,8 +20,7 @@ import java.util.regex.Matcher;
  *
  * @author Chris Henry + Tim Chung
  */
-public class ParkingViolationReaderJSON implements ParkingViolationReader {
-    private static final String FILE_ERR_MSG = "parking violation file must exist and be readable";
+public class ParkingViolationReaderJSON extends Reader implements ParkingViolationReader {
     private static final String DATE_PARSE_ERR_MSG = "parking violation date parse error";
     private static final String JSON_PARSE_ERR_MSG = "parking violation JSON parse error";
     protected JSONArray parkingViolationsJSON;
@@ -32,16 +31,10 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
      * @param filename a JSON filename for a parking violation file
      */
     public ParkingViolationReaderJSON(String filename) {
+        super(filename);
         try {
-            FileReader file = new FileReader(filename);
-            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), filename));
             JSONParser parser = new JSONParser();
             parkingViolationsJSON = (JSONArray) parser.parse(file);
-
-        } catch (FileNotFoundException e) {
-            System.out.println(FILE_ERR_MSG);
-            System.exit(4);
-
         } catch (IOException | ParseException e) {
             System.out.println(JSON_PARSE_ERR_MSG);
             System.exit(4);
@@ -92,7 +85,7 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
                 ParkingViolation newParkingViolation = new ParkingViolation(timeStamp, new Long(fine).doubleValue(), violation,
                         plateId, state, new Long(ticketNumber).intValue(), Integer.parseInt(zipCode));
 
-                updateMap(parkingViolationsMap, newParkingViolation, newParkingViolation.getZipCode());
+                updateMap(parkingViolationsMap, newParkingViolation.getZipCode(), newParkingViolation);
 
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
 
@@ -102,15 +95,5 @@ public class ParkingViolationReaderJSON implements ParkingViolationReader {
         }
 
         return parkingViolationsMap;
-    }
-
-    private void updateMap(Map<Integer, List<ParkingViolation>> map, ParkingViolation pv, int zip) {
-        if (map.containsKey(zip)) {
-            map.get(zip).add(pv);
-        } else {
-            List<ParkingViolation> parkingViolations = new LinkedList<>();
-            parkingViolations.add(pv);
-            map.put(zip, parkingViolations);
-        }
     }
 }

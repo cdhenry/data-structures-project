@@ -2,11 +2,10 @@ package edu.upenn.cit594.datamanagement;
 
 import edu.upenn.cit594.data.CommonConstant;
 import edu.upenn.cit594.data.PropertyValue;
-import edu.upenn.cit594.logging.Logger;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 /**
@@ -14,9 +13,7 @@ import java.util.regex.Matcher;
  *
  * @author Chris Henry + Tim Chung
  */
-public class PropertyValueReaderCSV {
-    private static final String FILE_ERR_MSG = "property value file must exist and be readable";
-    protected Scanner readIn;
+public class PropertyValueReaderCSV extends Reader {
 
     /**
      * Takes in a filename and stores it for use on a comma separated text file
@@ -24,14 +21,7 @@ public class PropertyValueReaderCSV {
      * @param filename a CSV filename for a property value file
      */
     public PropertyValueReaderCSV(String filename) {
-        try {
-            FileReader file = new FileReader(filename);
-            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), filename));
-            readIn = new Scanner(file);
-        } catch (IOException e) {
-            System.out.println(FILE_ERR_MSG);
-            System.exit(4);
-        }
+        super(filename);
     }
 
     /**
@@ -90,13 +80,7 @@ public class PropertyValueReaderCSV {
                 PropertyValue newPropertyValue = new PropertyValue(++id, marketValueDouble,
                         totalLivableAreaDouble, zipCodeInt);
 
-                if (propertyValuesMap.containsKey(zipCodeInt)) {
-                    propertyValuesMap.get(zipCodeInt).add(newPropertyValue);
-                } else {
-                    List<PropertyValue> propertyValues = new LinkedList<>();
-                    propertyValues.add(newPropertyValue);
-                    propertyValuesMap.put(zipCodeInt, propertyValues);
-                }
+                updateMap(propertyValuesMap, newPropertyValue.getZipCode(), newPropertyValue);
 
             } catch (NumberFormatException e) {}
         }

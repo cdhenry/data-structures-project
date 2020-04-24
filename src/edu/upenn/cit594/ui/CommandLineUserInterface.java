@@ -87,7 +87,7 @@ public class CommandLineUserInterface {
                 printTotalResidentialMarketValuePerCapita(getZipCode());
                 break;
             case 6:
-                printMarketValOverAvgFinePerCapita(getZipCode());
+                printAverageMktValOverAvgFinePerCap(getZipCode());
                 break;
             default:
                 printError();
@@ -129,7 +129,7 @@ public class CommandLineUserInterface {
         System.out.println("\t3 for the average residential market value");
         System.out.println("\t4 for the average residential total livable area");
         System.out.println("\t5 for the total residential market value per capita");
-        System.out.println("\t6 for // TODO: CUSTOM FEATURE");
+        System.out.println("\t6 for average market value over fine per capita");
     }
 
     /**
@@ -184,9 +184,9 @@ public class CommandLineUserInterface {
     }
 
     /**
-     * CUSTOM FUNCTION: Prints total market value for zip code over average fine per capita
+     * CUSTOM FUNCTION: Prints avg market value for zip code over average fine per capita
      */
-    private void printMarketValOverAvgFinePerCapita(int zipCode) {
+    private void printAverageMktValOverAvgFinePerCap(int zipCode) {
         int populationCount = populationProcessor.getPopulationsByZip(zipCode);
         double avgMarketValPerCapita = propertyValueProcessor.getTotalMarketValueByZip(zipCode) / populationCount;
         double avgFinePerCapita = parkingViolationProcessor.getAvgFinePerCapita(zipCode, populationCount);

@@ -58,9 +58,7 @@ public class Main {
             System.exit(1);
         }
 
-        String[] arg = {"csv","parking.csv","properties.csv","population.txt","log.txt"};
-
-        String parkingViolationsFileFormat = arg[0];
+        String parkingViolationsFileFormat = args[0];
         boolean isParkingViolationsJSON = parkingViolationsFileFormat.equals(JSON);
         boolean isParkingViolationsCSV = parkingViolationsFileFormat.equals(CSV);
 

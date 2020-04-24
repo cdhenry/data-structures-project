@@ -2,13 +2,8 @@ package edu.upenn.cit594.datamanagement;
 
 import edu.upenn.cit594.data.CommonConstant;
 import edu.upenn.cit594.data.Population;
-import edu.upenn.cit594.logging.Logger;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 
@@ -17,25 +12,14 @@ import java.util.regex.Matcher;
  *
  * @author Chris Henry + Tim Chung
  */
-public class PopulationReaderSSV {
-    private static final String FILE_ERR_MSG = "population file must exist and be readable";
-    protected Scanner readIn;
-
+public class PopulationReaderSSV extends Reader {
     /**
      * Takes in a filename and stores it for use on a comma separated text file
      *
      * @param filename an SSV filename for a population file
      */
     public PopulationReaderSSV(String filename) {
-        try {
-            FileReader file = new FileReader(filename);
-            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), filename));
-            readIn = new Scanner(file);
-
-        } catch (IOException e) {
-            System.out.println(FILE_ERR_MSG);
-            System.exit(4);
-        }
+        super(filename);
     }
 
     /**

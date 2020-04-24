@@ -2,10 +2,7 @@ package edu.upenn.cit594.datamanagement;
 
 import edu.upenn.cit594.data.CommonConstant;
 import edu.upenn.cit594.data.ParkingViolation;
-import edu.upenn.cit594.logging.Logger;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -16,10 +13,8 @@ import java.util.regex.Matcher;
  *
  * @author Chris Henry + Tim Chung
  */
-public class ParkingViolationReaderCSV implements ParkingViolationReader {
-    private static final String FILE_ERR_MSG = "parking violation file must exist and be readable";
-    private static final int VIOLATION_PROPERTY_COUNT = 7;
-    protected Scanner readIn;
+public class ParkingViolationReaderCSV extends Reader implements ParkingViolationReader {
+    private static final String DATE_PARSE_ERR_MSG = "parking violation date parse error";
 
     /**
      * Takes in a filename and stores it for use on a comma separated text file
@@ -27,15 +22,7 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
      * @param filename a CSV filename for a parking violation file
      */
     public ParkingViolationReaderCSV(String filename) {
-        try {
-            FileReader file = new FileReader(filename);
-            Logger.getInstance().log(String.format("%d %s\n", System.currentTimeMillis(), filename));
-            readIn = new Scanner(file);
-
-        } catch (IOException e) {
-            System.out.println(FILE_ERR_MSG);
-            System.exit(4);
-        }
+        super(filename);
     }
 
     @Override
@@ -95,21 +82,11 @@ public class ParkingViolationReaderCSV implements ParkingViolationReader {
                 ParkingViolation newParkingViolation = new ParkingViolation(timeStamp, Double.parseDouble(fine) , violation,
                         plateId, state, Integer.parseInt(ticketNumber), Integer.parseInt(zipCode));
 
-                updateMap(parkingViolationsMap, newParkingViolation, newParkingViolation.getZipCode());
+                updateMap(parkingViolationsMap, newParkingViolation.getZipCode(), newParkingViolation);
 
             } catch (ArrayIndexOutOfBoundsException | NumberFormatException |ParseException e) {
             }
         }
         return parkingViolationsMap;
-    }
-
-    private void updateMap(Map<Integer, List<ParkingViolation>> map, ParkingViolation pv, int zip) {
-        if (map.containsKey(zip)) {
-            map.get(zip).add(pv);
-        } else {
-            List<ParkingViolation> parkingViolations = new LinkedList<>();
-            parkingViolations.add(pv);
-            map.put(zip, parkingViolations);
-        }
     }
 }
