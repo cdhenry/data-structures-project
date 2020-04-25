@@ -9,7 +9,7 @@ import java.util.Date;
  *
  * @author Chris Henry + Tim Chung
  */
-public class ParkingViolation { // implements Comparable<Object>, Comparator<Object> {
+public class ParkingViolation {
     protected Date timeStamp;
     protected int zipCode, id;
     protected double fineInDollars;
@@ -83,57 +83,4 @@ public class ParkingViolation { // implements Comparable<Object>, Comparator<Obj
     public int getZipCode() {
         return zipCode;
     }
-
-    @Override
-    public String toString() {
-        return id + " " + zipCode;
-    }
-
-    public boolean equals(Object obj) {
-        if (obj instanceof ParkingViolation) {
-            ParkingViolation other = (ParkingViolation) obj;
-            return id == other.id;
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return toString().hashCode();
-    }
-//
-//    @Override
-//    public int compare(Object o1, Object o2) {
-//        if (o1 instanceof ParkingViolation && o2 instanceof ParkingViolation) {
-//            ParkingViolation p1 = (ParkingViolation) o1;
-//            ParkingViolation p2 = (ParkingViolation) o2;
-//            int zipCompare = Integer.compare(p1.getZipCode(), p2.getZipCode());
-//
-//            if (zipCompare == 0) {
-//                return Integer.compare(p1.getId(), p2.getId());
-//            } else {
-//                return zipCompare;
-//            }
-//        }
-//
-//        return 0;
-//    }
-//
-//    @Override
-//    public int compareTo(Object obj) {
-//        ParkingViolation p1 = this;
-//
-//        if (obj instanceof ParkingViolation) {
-//            ParkingViolation p2 = (ParkingViolation) obj;
-//            int zipCompare = Integer.compare(p1.getZipCode(), p2.getZipCode());
-//
-//            if (zipCompare == 0) {
-//                return Integer.compare(p1.getId(), p2.getId());
-//            } else {
-//                return zipCompare;
-//            }
-//        }
-//
-//        return 0;
-//    }
 }
