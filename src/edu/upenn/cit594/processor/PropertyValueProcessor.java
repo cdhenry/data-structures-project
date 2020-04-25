@@ -1,8 +1,7 @@
 package edu.upenn.cit594.processor;
 
 import edu.upenn.cit594.data.PropertyValue;
-import edu.upenn.cit594.data.SumSizePair;
-import edu.upenn.cit594.datamanagement.PropertyValueReaderCSV;
+import edu.upenn.cit594.datamanagement.MappableByInteger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,11 +13,11 @@ import java.util.Map;
  *
  * @author Chris Henry + Tim Chung
  */
-public class PropertyValueProcessor {
-    protected PropertyValueReaderCSV propertyValueReader;
+public class PropertyValueProcessor implements Runnable {
+    protected MappableByInteger<List<PropertyValue>> propertyValueReader;
     protected Map<Integer, List<PropertyValue>> propertyValuesMap;
-    protected Map<Integer, SumSizePair> totalLivableAreaByZip;
-    protected Map<Integer, SumSizePair> totalMarketValueByZip;
+    protected Map<Integer, ListSumSizePair> totalLivableAreaByZip;
+    protected Map<Integer, ListSumSizePair> totalMarketValueByZip;
 
     /**
      * Constructs a PropertyValueProcessor to store a set of PropertyValue objects created by the
@@ -26,11 +25,15 @@ public class PropertyValueProcessor {
      *
      * @param propertyValueReader reader for property value data
      */
-    public PropertyValueProcessor(PropertyValueReaderCSV propertyValueReader) {
+    public PropertyValueProcessor(MappableByInteger<List<PropertyValue>> propertyValueReader) {
         this.propertyValueReader = propertyValueReader;
-        this.propertyValuesMap = propertyValueReader.getAllPropertyValues();
         this.totalMarketValueByZip = new HashMap<>();
         this.totalLivableAreaByZip = new HashMap<>();
+    }
+
+    @Override
+    public void run() {
+        this.propertyValuesMap = propertyValueReader.getIntegerMap();
     }
 
     /**
@@ -59,7 +62,7 @@ public class PropertyValueProcessor {
      * @return Average Residential Market Value
      */
     public double getAvgMarketValue(int zipCode) {
-        SumSizePair pair = getSumSizePair(zipCode, new MarketValueReducer(), totalMarketValueByZip);
+        ListSumSizePair pair = getListSumSizePair(zipCode, new MarketValueReducer(), totalMarketValueByZip);
         return pair.getSum() / pair.getSize();
     }
 
@@ -68,7 +71,7 @@ public class PropertyValueProcessor {
      * @return Average Residential Total Livable Area
      */
     public double getAvgLivableArea(int zipCode) {
-        SumSizePair pair = getSumSizePair(zipCode, new TotalLivableAreaReducer(), totalLivableAreaByZip);
+        ListSumSizePair pair = getListSumSizePair(zipCode, new TotalLivableAreaReducer(), totalLivableAreaByZip);
         return pair.getSum() / pair.getSize();
     }
 
@@ -76,30 +79,69 @@ public class PropertyValueProcessor {
      * @return total market value for all residences in zip code
      */
     public double getTotalMarketValueByZip(int zipCode) {
-        return getSumSizePair(zipCode, new MarketValueReducer(), totalMarketValueByZip).getSum();
+        return getListSumSizePair(zipCode, new MarketValueReducer(), totalMarketValueByZip).getSum();
     }
 
     /**
      * @param reducer strategy pattern for acquiring totals by zip code and the number of objects to create said total
      * @return a SumSizePair object
      */
-    private SumSizePair getSumSizePair(int zipCode, PropertyValueReducer reducer, Map<Integer, SumSizePair> memo) {
+    private ListSumSizePair getListSumSizePair(int zipCode, PropertyValueReducer reducer, Map<Integer, ListSumSizePair> memo) {
         if (memo.containsKey(zipCode)) {
             return memo.get(zipCode);
         }
 
         List<PropertyValue> properties = getPropertyValuesMap().get(zipCode);
-        SumSizePair newPair;
+        ListSumSizePair newPair;
 
         if (properties == null || properties.isEmpty()) {
-            newPair = new SumSizePair();
+            newPair = new ListSumSizePair();
             memo.put(zipCode, newPair);
             return newPair;
         }
 
-        newPair = new SumSizePair(reducer.reduce(properties), properties.size());
+        newPair = new ListSumSizePair(reducer.reduce(properties), properties.size());
         memo.put(zipCode, newPair);
 
         return newPair;
+    }
+
+    /**
+     * A basic value pair class for storing a sum and the number of values used to create said sum
+     */
+    private class ListSumSizePair {
+        protected int size;
+        protected double sum;
+
+        /**
+         * Constructs an empty SumSizePair
+         */
+        public ListSumSizePair() {
+            this.sum = 0.0;
+            this.size = 0;
+        }
+
+        /**
+         * @param sum  a double sum value
+         * @param size the number of values used to create sum
+         */
+        public ListSumSizePair(double sum, int size) {
+            this.sum = sum;
+            this.size = size;
+        }
+
+        /**
+         * @return size
+         */
+        public int getSize() {
+            return size;
+        }
+
+        /**
+         * @return sum
+         */
+        public double getSum() {
+            return sum;
+        }
     }
 }

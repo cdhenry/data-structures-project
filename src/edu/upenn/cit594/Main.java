@@ -1,5 +1,6 @@
 package edu.upenn.cit594;
 
+import edu.upenn.cit594.data.ParkingViolation;
 import edu.upenn.cit594.datamanagement.*;
 import edu.upenn.cit594.logging.Logger;
 import edu.upenn.cit594.processor.ParkingViolationProcessor;
@@ -8,6 +9,7 @@ import edu.upenn.cit594.processor.PropertyValueProcessor;
 import edu.upenn.cit594.ui.CommandLineUserInterface;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Main class takes in arguments from the caller, creates files, initializes logger and activates the CLI
@@ -31,7 +33,7 @@ public class Main {
     protected static String propertyValuesFilename;
     protected static String populationFilename;
     protected static String logFilename;
-    protected static ParkingViolationReader parkingViolationReader;
+    protected static MappableByInteger<List<ParkingViolation>> parkingViolationReader;
     protected static PropertyValueReaderCSV propertyValueReader;
     protected static PopulationReaderSSV populationReader;
     protected static ParkingViolationProcessor parkingViolationProcessor;
@@ -81,7 +83,9 @@ public class Main {
         createProcessors();
         createCLI();
 
-        ui.start();
+        if (ui != null) {
+            ui.start();
+        }
     }
 
     /**
@@ -101,8 +105,27 @@ public class Main {
      */
     public static void createProcessors() {
         parkingViolationProcessor = new ParkingViolationProcessor(parkingViolationReader);
+        Thread t1 = new Thread(parkingViolationProcessor);
+
         propertyValueProcessor = new PropertyValueProcessor(propertyValueReader);
+        Thread t2 = new Thread(propertyValueProcessor);
+
         populationProcessor = new PopulationProcessor(populationReader);
+        Thread t3 = new Thread(populationProcessor);
+
+        t1.start();
+        t2.start();
+        t3.start();
+
+        try {
+            t1.join();
+            t2.join();
+            t3.join();
+        } catch (InterruptedException e) {
+            System.out.println("Error joining processor threads");
+        }
+
+        Logger.getInstance().log(String.format("%d Processors Finished Init\n", System.currentTimeMillis()));
     }
 
     /**

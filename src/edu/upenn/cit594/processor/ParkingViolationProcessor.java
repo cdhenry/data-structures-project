@@ -1,7 +1,7 @@
 package edu.upenn.cit594.processor;
 
 import edu.upenn.cit594.data.ParkingViolation;
-import edu.upenn.cit594.datamanagement.ParkingViolationReader;
+import edu.upenn.cit594.datamanagement.MappableByInteger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,10 +13,10 @@ import java.util.Map;
  *
  * @author Chris Henry + Tim Chung
  */
-public class ParkingViolationProcessor {
-    protected ParkingViolationReader parkingViolationReader;
+public class ParkingViolationProcessor implements Runnable {
     protected Map<Integer, List<ParkingViolation>> parkingViolationsMap;
     protected Map<Integer, Double> totalFinesByZip;
+    protected MappableByInteger<List<ParkingViolation>> parkingViolationReader;
 
     /**
      * Constructs a ParkingViolationProcessor to store a set of ParkingViolation objects created by the
@@ -24,10 +24,14 @@ public class ParkingViolationProcessor {
      *
      * @param parkingViolationReader reader for parking violation data
      */
-    public ParkingViolationProcessor(ParkingViolationReader parkingViolationReader) {
+    public ParkingViolationProcessor(MappableByInteger<List<ParkingViolation>> parkingViolationReader) {
         this.parkingViolationReader = parkingViolationReader;
-        this.parkingViolationsMap = parkingViolationReader.getAllParkingViolations();
         this.totalFinesByZip = new HashMap<>();
+    }
+
+    @Override
+    public void run() {
+        this.parkingViolationsMap = parkingViolationReader.getIntegerMap();
     }
 
     /**
@@ -44,7 +48,7 @@ public class ParkingViolationProcessor {
      */
     public double getTotalFinesPerCapita(int zipCode, int localPopulation) {
         if (localPopulation > 0) {
-            Double totalFines = getTotalFinesByZip(zipCode);
+            double totalFines = getTotalFinesByZip(zipCode);
             return totalFines / localPopulation;
         }
 

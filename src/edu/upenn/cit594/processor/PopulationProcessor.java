@@ -1,6 +1,6 @@
 package edu.upenn.cit594.processor;
 
-import edu.upenn.cit594.datamanagement.PopulationReaderSSV;
+import edu.upenn.cit594.datamanagement.MappableByInteger;
 
 import java.util.Map;
 
@@ -9,9 +9,9 @@ import java.util.Map;
  *
  * @author Chris Henry + Tim Chung
  */
-public class PopulationProcessor {
+public class PopulationProcessor implements Runnable {
     private static final int TOTAL_POPULATION_UNINITIALIZED = -1;
-    protected PopulationReaderSSV populationReader;
+    protected MappableByInteger<Integer> populationReader;
     protected Map<Integer, Integer> populationsMap;
     protected int totalPopulation;
 
@@ -20,10 +20,14 @@ public class PopulationProcessor {
      *
      * @param populationReader
      */
-    public PopulationProcessor(PopulationReaderSSV populationReader) {
+    public PopulationProcessor(MappableByInteger<Integer> populationReader) {
         this.populationReader = populationReader;
-        this.populationsMap = populationReader.getAllPopulations();
         this.totalPopulation = TOTAL_POPULATION_UNINITIALIZED;
+    }
+
+    @Override
+    public void run() {
+        this.populationsMap = populationReader.getIntegerMap();
     }
 
     /**
