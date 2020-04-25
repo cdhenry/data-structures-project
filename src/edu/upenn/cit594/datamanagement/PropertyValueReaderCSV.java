@@ -1,6 +1,5 @@
 package edu.upenn.cit594.datamanagement;
 
-import edu.upenn.cit594.data.CommonConstant;
 import edu.upenn.cit594.data.PropertyValue;
 
 import java.util.HashMap;
@@ -13,7 +12,7 @@ import java.util.regex.Matcher;
  *
  * @author Chris Henry + Tim Chung
  */
-public class PropertyValueReaderCSV extends Reader {
+public class PropertyValueReaderCSV extends Reader<List<PropertyValue>> {
 
     /**
      * Takes in a filename and stores it for use on a comma separated text file
@@ -29,10 +28,10 @@ public class PropertyValueReaderCSV extends Reader {
      *
      * @return a map of property value objects by their zip codes
      */
-    public Map<Integer, List<PropertyValue>> getAllPropertyValues() {
+    public Map<Integer, List<PropertyValue>> getIntegerMap() {
         Map<Integer, List<PropertyValue>> propertyValuesMap = new HashMap<>();
         String headers = readIn.nextLine();
-        String[] headerArray = headers.trim().split(CommonConstant.COMMA_REGEX);
+        String[] headerArray = headers.trim().split(COMMA_REGEX);
         int marketValueIndex = -1, totalLivableAreaIndex = -1, zipCodeIndex = -1, id = -1;
 
         for (int i = 0; i < headerArray.length; i++) {
@@ -47,7 +46,7 @@ public class PropertyValueReaderCSV extends Reader {
 
         while (readIn.hasNextLine()) {
             String propertyValue = readIn.nextLine();
-            String[] propertyValueArray = propertyValue.trim().split(CommonConstant.COMMA_REGEX);
+            String[] propertyValueArray = propertyValue.trim().split(COMMA_REGEX);
 
             if (propertyValueArray.length != headerArray.length) {
                 continue;
@@ -64,7 +63,7 @@ public class PropertyValueReaderCSV extends Reader {
             }
 
             String zipCode = propertyValueArray[zipCodeIndex].trim();
-            Matcher m = CommonConstant.ZIP_CODE_PATTERN.matcher(zipCode);
+            Matcher m = ZIP_CODE_PATTERN.matcher(zipCode);
             if (m.find()) {
                 zipCode = m.group();
             } else {
@@ -80,9 +79,9 @@ public class PropertyValueReaderCSV extends Reader {
                 PropertyValue newPropertyValue = new PropertyValue(++id, marketValueDouble,
                         totalLivableAreaDouble, zipCodeInt);
 
-                updateMap(propertyValuesMap, newPropertyValue.getZipCode(), newPropertyValue);
+                updateIntegerListMap(propertyValuesMap, newPropertyValue.getZipCode(), newPropertyValue);
 
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
             }
         }
 

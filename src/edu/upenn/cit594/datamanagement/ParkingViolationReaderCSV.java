@@ -1,6 +1,5 @@
 package edu.upenn.cit594.datamanagement;
 
-import edu.upenn.cit594.data.CommonConstant;
 import edu.upenn.cit594.data.ParkingViolation;
 
 import java.text.ParseException;
@@ -13,7 +12,7 @@ import java.util.regex.Matcher;
  *
  * @author Chris Henry + Tim Chung
  */
-public class ParkingViolationReaderCSV extends Reader implements ParkingViolationReader {
+public class ParkingViolationReaderCSV extends Reader<List<ParkingViolation>> {
     private static final int VIOLATION_PROPERTY_COUNT = 7;
 
     /**
@@ -26,13 +25,12 @@ public class ParkingViolationReaderCSV extends Reader implements ParkingViolatio
     }
 
     @Override
-    public Map<Integer, List<ParkingViolation>> getAllParkingViolations() {
+    public Map<Integer, List<ParkingViolation>> getIntegerMap() {
         Map<Integer, List<ParkingViolation>> parkingViolationsMap = new HashMap<>();
 
         while (readIn.hasNextLine()) {
             String parkingViolation = readIn.nextLine();
-            String[] parkingViolationArray = parkingViolation.trim().split(CommonConstant.COMMA_REGEX);
-
+            String[] parkingViolationArray = parkingViolation.trim().split(COMMA_REGEX);
 
             if (parkingViolationArray.length != VIOLATION_PROPERTY_COUNT) {
                 continue;
@@ -70,7 +68,7 @@ public class ParkingViolationReaderCSV extends Reader implements ParkingViolatio
                 }
 
                 String zipCode = parkingViolationArray[6].trim();
-                Matcher m = CommonConstant.ZIP_CODE_PATTERN.matcher(zipCode);
+                Matcher m = ZIP_CODE_PATTERN.matcher(zipCode);
                 if (m.find()) {
                     zipCode = m.group();
                 } else {
@@ -82,9 +80,9 @@ public class ParkingViolationReaderCSV extends Reader implements ParkingViolatio
                 ParkingViolation newParkingViolation = new ParkingViolation(timeStamp, Double.parseDouble(fine), violation,
                         plateId, state, Integer.parseInt(ticketNumber), Integer.parseInt(zipCode));
 
-                updateMap(parkingViolationsMap, newParkingViolation.getZipCode(), newParkingViolation);
+                updateIntegerListMap(parkingViolationsMap, newParkingViolation.getZipCode(), newParkingViolation);
 
-            } catch (ArrayIndexOutOfBoundsException | NumberFormatException | ParseException e) {
+            } catch (ArrayIndexOutOfBoundsException | NumberFormatException | ParseException ignored) {
             }
         }
         return parkingViolationsMap;

@@ -1,6 +1,5 @@
 package edu.upenn.cit594.datamanagement;
 
-import edu.upenn.cit594.data.CommonConstant;
 import edu.upenn.cit594.data.Population;
 
 import java.util.Map;
@@ -12,7 +11,7 @@ import java.util.regex.Matcher;
  *
  * @author Chris Henry + Tim Chung
  */
-public class PopulationReaderSSV extends Reader {
+public class PopulationReaderSSV extends Reader<Integer> {
     /**
      * Takes in a filename and stores it for use on a comma separated text file
      *
@@ -27,16 +26,16 @@ public class PopulationReaderSSV extends Reader {
      *
      * @return a map of population objects by their zip codes
      */
-    public Map<Integer, Integer> getAllPopulations() {
+    public Map<Integer, Integer> getIntegerMap() {
         Map<Integer, Integer> populationsMap = new TreeMap<>();
 
         while (readIn.hasNextLine()) {
             String population = readIn.nextLine();
-            String[] populationArray = population.trim().split(CommonConstant.SPACE_REGEX);
+            String[] populationArray = population.trim().split(SPACE_REGEX);
 
             try {
                 String zipCode = populationArray[0].trim();
-                Matcher m = CommonConstant.ZIP_CODE_PATTERN.matcher(zipCode);
+                Matcher m = ZIP_CODE_PATTERN.matcher(zipCode);
                 if (m.find()) {
                     zipCode = m.group();
                 } else {
@@ -51,7 +50,7 @@ public class PopulationReaderSSV extends Reader {
                 Population newPopulation = new Population(Integer.parseInt(zipCode), Integer.parseInt(populationCount));
                 populationsMap.put(newPopulation.getZipCode(), newPopulation.getPopulation());
 
-            } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+            } catch (ArrayIndexOutOfBoundsException | NumberFormatException ignored) {
             }
         }
         return populationsMap;

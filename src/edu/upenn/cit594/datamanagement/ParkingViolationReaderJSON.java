@@ -1,6 +1,5 @@
 package edu.upenn.cit594.datamanagement;
 
-import edu.upenn.cit594.data.CommonConstant;
 import edu.upenn.cit594.data.ParkingViolation;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,8 +19,7 @@ import java.util.regex.Matcher;
  *
  * @author Chris Henry + Tim Chung
  */
-public class ParkingViolationReaderJSON extends Reader implements ParkingViolationReader {
-    private static final String FILE_ERR_MSG = "parking violation file must exist and be readable";
+public class ParkingViolationReaderJSON extends Reader<List<ParkingViolation>> {
     private static final String JSON_PARSE_ERR_MSG = "parking violation JSON parse error";
     protected JSONArray parkingViolationsJSON;
 
@@ -32,9 +30,10 @@ public class ParkingViolationReaderJSON extends Reader implements ParkingViolati
      */
     public ParkingViolationReaderJSON(String filename) {
         super(filename);
+
         try {
             JSONParser parser = new JSONParser();
-            parkingViolationsJSON = (JSONArray) parser.parse(file);
+            parkingViolationsJSON = (JSONArray) parser.parse(super.file);
         } catch (IOException | ParseException e) {
             System.out.println(JSON_PARSE_ERR_MSG);
             System.exit(4);
@@ -42,8 +41,8 @@ public class ParkingViolationReaderJSON extends Reader implements ParkingViolati
     }
 
     @Override
-    public Map<Integer, List<ParkingViolation>> getAllParkingViolations() {
-        Map<Integer, List<ParkingViolation>>  parkingViolationsMap = new HashMap<>();
+    public Map<Integer, List<ParkingViolation>> getIntegerMap() {
+        Map<Integer, List<ParkingViolation>> parkingViolationsMap = new HashMap<>();
 
         for (Object o : parkingViolationsJSON) {
             JSONObject parkingViolation = (JSONObject) o;
@@ -63,7 +62,7 @@ public class ParkingViolationReaderJSON extends Reader implements ParkingViolati
                 }
 
                 String zipCode = (String) parkingViolation.get("zip_code");
-                Matcher m = CommonConstant.ZIP_CODE_PATTERN.matcher(zipCode);
+                Matcher m = ZIP_CODE_PATTERN.matcher(zipCode);
                 if (m.find()) {
                     zipCode = m.group();
                 } else {
@@ -85,9 +84,9 @@ public class ParkingViolationReaderJSON extends Reader implements ParkingViolati
                 ParkingViolation newParkingViolation = new ParkingViolation(timeStamp, new Long(fine).doubleValue(), violation,
                         plateId, state, new Long(ticketNumber).intValue(), Integer.parseInt(zipCode));
 
-                updateMap(parkingViolationsMap, newParkingViolation.getZipCode(), newParkingViolation);
+                updateIntegerListMap(parkingViolationsMap, newParkingViolation.getZipCode(), newParkingViolation);
 
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException | java.text.ParseException e) {
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException | java.text.ParseException ignored) {
             }
         }
 
