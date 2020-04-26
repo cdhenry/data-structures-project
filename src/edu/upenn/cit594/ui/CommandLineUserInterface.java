@@ -194,10 +194,6 @@ public class CommandLineUserInterface {
         if (populationCount > 0) {
             double avgFinePerCapita = parkingViolationProcessor.getAvgFinePerCapita(zipCode, populationCount);
             avgMktValOverAvgFinePerCap = propertyValueProcessor.getAvgMktValOverAvgFinePerCap(zipCode, avgFinePerCapita);
-
-            if (avgFinePerCapita > 0) {
-                System.out.printf("%04.4f\n", avgMktValOverAvgFinePerCap);
-            }
         }
 
         System.out.printf("%04.4f\n", avgMktValOverAvgFinePerCap);
