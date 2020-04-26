@@ -160,7 +160,7 @@ public class CommandLineUserInterface {
      * Prints average residential market value for provided zip code
      */
     private void printAverageResidentialMarketValue(int zipCode) {
-        System.out.printf("%04.4f\n", propertyValueProcessor.getAvgMarketValue(zipCode));
+        System.out.printf("%d\n", (int) propertyValueProcessor.getAvgMarketValue(zipCode));
     }
 
     /**
@@ -197,11 +197,10 @@ public class CommandLineUserInterface {
             avgFinePerCapita = parkingViolationProcessor.getAvgFinePerCapita(zipCode, populationCount);
 
             if (avgFinePerCapita > 0) {
-                System.out.printf("%04.4f\n", avgMarketValPerCapita / avgFinePerCapita);
+                System.out.printf("%d\n", (int) (avgMarketValPerCapita / avgFinePerCapita));
             }
         }
-
-        System.out.printf("%04.4f\n", 0.0);
+        System.out.printf("%d\n", 0);
     }
 
     /**
