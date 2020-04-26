@@ -58,6 +58,20 @@ public class PropertyValueProcessor implements Runnable {
     }
 
     /**
+     * @param zipCode          zip code in which to get average market value
+     * @param avgFinePerCapita average fine per capita
+     * @return average market value over average fine per capita
+     */
+    public double getAvgMktValOverAvgFinePerCap(int zipCode, double avgFinePerCapita) {
+        if (avgFinePerCapita > 0) {
+            double avgMarketVal = getAvgMarketValue(zipCode);
+            return avgMarketVal / avgFinePerCapita;
+        }
+
+        return 0.0;
+    }
+
+    /**
      * @param zipCode zip code in which to search
      * @return Average Residential Market Value
      */
