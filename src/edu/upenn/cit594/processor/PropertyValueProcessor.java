@@ -119,7 +119,7 @@ public class PropertyValueProcessor implements Runnable {
          */
         public ListSumSizePair() {
             this.sum = 0.0;
-            this.size = 0;
+            this.size = -1;
         }
 
         /**
