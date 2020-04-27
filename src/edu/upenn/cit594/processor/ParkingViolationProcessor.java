@@ -16,6 +16,7 @@ import java.util.Map;
 public class ParkingViolationProcessor implements Runnable {
     protected Map<Integer, List<ParkingViolation>> parkingViolationsMap;
     protected Map<Integer, SumSizePair> totalFinesByZip;
+    protected Map<Integer, Double> averageFinesByArea;
     protected MappableByInteger<List<ParkingViolation>> parkingViolationReader;
 
     /**
@@ -27,6 +28,7 @@ public class ParkingViolationProcessor implements Runnable {
     public ParkingViolationProcessor(MappableByInteger<List<ParkingViolation>> parkingViolationReader) {
         this.parkingViolationReader = parkingViolationReader;
         this.totalFinesByZip = new HashMap<>();
+        this.averageFinesByArea = new HashMap<>();
     }
 
     @Override
@@ -52,7 +54,7 @@ public class ParkingViolationProcessor implements Runnable {
             return totalFines / localPopulation;
         }
 
-        return 0.0;
+        return 0;
     }
 
     /**
@@ -84,7 +86,7 @@ public class ParkingViolationProcessor implements Runnable {
      * @param zipCode zip code to seek out average fine
      * @return average fine in provided zip code
      */
-    public double getAverageFinePerArea(int zipCode) {
+    public double getAverageFine(int zipCode) {
         SumSizePair pair = getTotalFinesByZip(zipCode);
         return pair == null ? 0.0 : pair.getSum() / pair.getSize();
     }
