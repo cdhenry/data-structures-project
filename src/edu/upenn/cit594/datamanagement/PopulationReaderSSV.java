@@ -21,11 +21,7 @@ public class PopulationReaderSSV extends Reader<Integer> {
         super(filename);
     }
 
-    /**
-     * Maps a set of populations from a file by their zip codes
-     *
-     * @return a map of population objects by their zip codes
-     */
+    @Override
     public Map<Integer, Integer> getIntegerMap() {
         Map<Integer, Integer> populationsMap = new TreeMap<>();
 
