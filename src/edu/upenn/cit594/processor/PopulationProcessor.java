@@ -18,7 +18,7 @@ public class PopulationProcessor implements Runnable {
     /**
      * Constructs a Population to store a set of Population objects created by the PopulationReader class
      *
-     * @param populationReader
+     * @param populationReader reader for population data
      */
     public PopulationProcessor(MappableByInteger<Integer> populationReader) {
         this.populationReader = populationReader;
@@ -54,7 +54,7 @@ public class PopulationProcessor implements Runnable {
             return populationsMap.get(zipCode);
         }
 
-        return -1;
+        return TOTAL_POPULATION_UNINITIALIZED;
     }
 
     public Map<Integer, Integer> getPopulationsMap() {
