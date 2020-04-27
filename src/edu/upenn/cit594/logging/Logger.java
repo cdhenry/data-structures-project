@@ -1,6 +1,7 @@
 package edu.upenn.cit594.logging;
 
-import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
@@ -9,15 +10,16 @@ import java.io.PrintWriter;
  * @author Chris Henry + Tim Chung
  */
 public class Logger {
+    private static final String LOG_FILE_ERR_MSG = "log file must be writeable";
     private PrintWriter out;
     private static Logger instance;
 
     /**
      * Creates or uses a file by the specified filename to be used for logging
      *
-     * @param file the filename to use for logging
+     * @param file the appendable FileWriter to use for logging
      */
-    private Logger(File file) {
+    private Logger(FileWriter file) {
         try {
             out = new PrintWriter(file);
         } catch (Exception e) {
@@ -27,15 +29,16 @@ public class Logger {
     /**
      * Initializes the logger singleton using filename provided
      *
-     * @param file the filename to use for logging
-     * @throws UnsupportedOperationException
+     * @param logFilename the filename to use for logging
      */
-    public static void init(File file) throws UnsupportedOperationException {
-        if (instance != null) {
-            throw new UnsupportedOperationException(
-                    "Once Logger Singleton has been instantiated, cannot re-instantiate");
+    public static void init(String logFilename) {
+        try {
+            FileWriter logFile = new FileWriter(logFilename, true);
+            instance = new Logger(logFile);
+        } catch (IOException e) {
+            System.out.println(LOG_FILE_ERR_MSG);
+            System.exit(3);
         }
-        instance = new Logger(file);
     }
 
     /**

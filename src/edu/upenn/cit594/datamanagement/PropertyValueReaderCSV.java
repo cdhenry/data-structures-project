@@ -23,11 +23,7 @@ public class PropertyValueReaderCSV extends Reader<List<PropertyValue>> {
         super(filename);
     }
 
-    /**
-     * Maps a set of property values from a file by their zip codes
-     *
-     * @return a map of property value objects by their zip codes
-     */
+    @Override
     public Map<Integer, List<PropertyValue>> getIntegerMap() {
         Map<Integer, List<PropertyValue>> propertyValuesMap = new HashMap<>();
         String headers = readIn.nextLine();

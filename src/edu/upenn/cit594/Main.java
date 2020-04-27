@@ -8,7 +8,6 @@ import edu.upenn.cit594.processor.PopulationProcessor;
 import edu.upenn.cit594.processor.PropertyValueProcessor;
 import edu.upenn.cit594.ui.CommandLineUserInterface;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -24,7 +23,6 @@ public class Main {
     private static final String CSV = "csv";
 
     private static final String FILE_FORMAT_ERR_MSG = "parking violations file format must be either 'json' or 'csv'";
-    private static final String LOG_FILE_ERR_MSG = "log file must be writeable";
     private static final String USAGE_ERR_MSG = "Usage: java Main [parking violations file format] " +
             "[parking violations filename] [property values filename] [population filename] [log filename]";
 
@@ -68,13 +66,7 @@ public class Main {
         populationFilename = args[3];
         logFilename = args[4];
 
-        File logFile = new File(logFilename);
-        if (logFile.exists() && !logFile.canWrite()) {
-            System.out.println(LOG_FILE_ERR_MSG);
-            System.exit(3);
-        }
-
-        Logger.init(logFile);
+        Logger.init(logFilename);
         Logger.getInstance().log(String.format("%d %s %s %s %s %s\n", System.currentTimeMillis(),
                 parkingViolationsFileFormat, parkingViolationsFilename, propertyValuesFilename, populationFilename,
                 logFilename));
@@ -123,9 +115,8 @@ public class Main {
             t3.join();
         } catch (InterruptedException e) {
             System.out.println("Error joining processor threads");
+            System.exit(6);
         }
-
-        Logger.getInstance().log(String.format("%d Processors Finished Init\n", System.currentTimeMillis()));
     }
 
     /**

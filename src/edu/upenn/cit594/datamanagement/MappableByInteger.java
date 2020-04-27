@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public interface MappableByInteger<V> {
     /**
-     * Maps a data from a file by some integer parsable attribute
+     * Maps data from a file by some integer parsable attribute
      *
      * @return a map of parking violation objects by their zip codes
      */
