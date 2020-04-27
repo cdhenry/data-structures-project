@@ -77,8 +77,7 @@ public class PropertyValueProcessor implements Runnable {
      */
     public double getAvgMarketValue(int zipCode) {
         ListSumSizePair pair = getListSumSizePair(zipCode, new MarketValueReducer(), totalMarketValueByZip);
-        if (pair == null) return 0.0;
-        return pair.getSum() / pair.getSize();
+        return (pair == null) ? 0.0 : (pair.getSum() / pair.getSize());
     }
 
     /**
