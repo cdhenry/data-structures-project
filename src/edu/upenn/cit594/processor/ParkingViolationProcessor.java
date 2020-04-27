@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class ParkingViolationProcessor implements Runnable {
     protected Map<Integer, List<ParkingViolation>> parkingViolationsMap;
-    protected Map<Integer, Double> totalFinesByZip;
+    protected Map<Integer, SumSizePair> totalFinesByZip;
     protected MappableByInteger<List<ParkingViolation>> parkingViolationReader;
 
     /**
@@ -48,7 +48,7 @@ public class ParkingViolationProcessor implements Runnable {
      */
     public double getTotalFinesPerCapita(int zipCode, int localPopulation) {
         if (localPopulation > 0) {
-            double totalFines = getTotalFinesByZip(zipCode);
+            double totalFines = getTotalFinesByZip(zipCode).getSum();
             return totalFines / localPopulation;
         }
 
@@ -59,14 +59,15 @@ public class ParkingViolationProcessor implements Runnable {
      * @param zipCode zip code to aggregate fines
      * @return total fines in a certain zip code
      */
-    private double getTotalFinesByZip(int zipCode) {
+    private SumSizePair getTotalFinesByZip(int zipCode) {
         if (!totalFinesByZip.containsKey(zipCode)) {
             List<ParkingViolation> violations = getParkingViolationsByZip().get(zipCode);
             double totalFines = 0.0;
 
             if (violations == null) {
-                totalFinesByZip.put(zipCode, totalFines);
-                return totalFines;
+                SumSizePair pair = new SumSizePair();
+                totalFinesByZip.put(zipCode, pair);
+                return pair;
             }
 
             for (ParkingViolation violation : violations) {
@@ -74,22 +75,17 @@ public class ParkingViolationProcessor implements Runnable {
                     totalFines += violation.getFineInDollars();
                 }
             }
-            totalFinesByZip.put(zipCode, totalFines);
+            totalFinesByZip.put(zipCode, new SumSizePair(totalFines, violations.size()));
         }
         return totalFinesByZip.get(zipCode);
     }
 
     /**
-     * @param zipCode         zip code to seek out aggregated fines
-     * @param localPopulation population of the passed in zip code
-     * @return average fines in a certain zip code divided by local population
+     * @param zipCode zip code to seek out average fine
+     * @return average fine in provided zip code
      */
-    public double getAvgFinePerCapita(int zipCode, int localPopulation) {
-        if (localPopulation > 0) {
-            double totalFines = getTotalFinesByZip(zipCode);
-            return totalFines / localPopulation;
-        }
-
-        return 0.0;
+    public double getAverageFinePerArea(int zipCode) {
+        SumSizePair pair = getTotalFinesByZip(zipCode);
+        return pair == null ? 0.0 : pair.getSum() / pair.getSize();
     }
 }

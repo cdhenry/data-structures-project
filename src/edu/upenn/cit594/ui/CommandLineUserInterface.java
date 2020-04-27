@@ -87,7 +87,7 @@ public class CommandLineUserInterface {
                 printTotalResidentialMarketValuePerCapita(getZipCode());
                 break;
             case 6:
-                printAverageMktValOverAvgFinePerCap(getZipCode());
+                printAverageMarketValueOverAverageFine(getZipCode());
                 break;
             default:
                 printError();
@@ -160,14 +160,14 @@ public class CommandLineUserInterface {
      * Prints average residential market value for provided zip code
      */
     private void printAverageResidentialMarketValue(int zipCode) {
-        System.out.printf("%04.4f\n", propertyValueProcessor.getAvgMarketValue(zipCode));
+        System.out.printf("%d\n", (int) propertyValueProcessor.getAverageMarketValue(zipCode));
     }
 
     /**
      * Prints average residential total livable area for provided zip code
      */
     private void printAverageResidentialTotalLivableArea(int zipCode) {
-        System.out.printf("%d\n", (int) propertyValueProcessor.getAvgLivableArea(zipCode));
+        System.out.printf("%d\n", (int) propertyValueProcessor.getAverageLivableArea(zipCode));
     }
 
     /**
@@ -187,21 +187,16 @@ public class CommandLineUserInterface {
     /**
      * CUSTOM FUNCTION: Prints avg market value for zip code over average fine per capita
      */
-    private void printAverageMktValOverAvgFinePerCap(int zipCode) {
+    private void printAverageMarketValueOverAverageFine(int zipCode) {
         int populationCount = populationProcessor.getPopulationsByZip(zipCode);
-        double avgMarketValPerCapita = 0.0;
-        double avgFinePerCapita = 0.0;
+        double averageMarketValueOverAverageFine = 0.0;
 
         if (populationCount > 0) {
-            avgMarketValPerCapita = propertyValueProcessor.getTotalMarketValueByZip(zipCode) / populationCount;
-            avgFinePerCapita = parkingViolationProcessor.getAvgFinePerCapita(zipCode, populationCount);
-
-            if (avgFinePerCapita > 0) {
-                System.out.printf("%04.4f\n", avgMarketValPerCapita / avgFinePerCapita);
-            }
+            double averageFine = parkingViolationProcessor.getAverageFinePerArea(zipCode);
+            averageMarketValueOverAverageFine = propertyValueProcessor.getAverageMarketValueOverAverageFine(zipCode, averageFine);
         }
 
-        System.out.printf("%04.4f\n", 0.0);
+        System.out.printf("%04.4f\n", averageMarketValueOverAverageFine);
     }
 
     /**
