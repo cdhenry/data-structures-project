@@ -87,7 +87,7 @@ public class CommandLineUserInterface {
                 printTotalResidentialMarketValuePerCapita(getZipCode());
                 break;
             case 6:
-                printAverageMarketValueOverAverageFine(getZipCode());
+                printMarketValuePerCapitaOverAverageFine();
                 break;
             default:
                 printError();
@@ -145,14 +145,11 @@ public class CommandLineUserInterface {
     private void printTotalFinesPerCapita() {
         for (Map.Entry<Integer, Integer> entry : populationProcessor.getPopulationsMap().entrySet()) {
             int zipCode = entry.getKey();
-            int population = entry.getValue();
+            int populationCount = entry.getValue();
 
-            if (population > 0) {
-                double totalFinePerCapita = parkingViolationProcessor.getTotalFinesPerCapita(zipCode, population);
-                if (totalFinePerCapita > 0) {
-                    System.out.printf("%d %04.4f\n", zipCode, totalFinePerCapita);
-                }
-            }
+            double totalFinePerCapita = parkingViolationProcessor.getTotalFinesPerCapita(zipCode, populationCount);
+
+            System.out.printf("%d %04.4f\n", zipCode, totalFinePerCapita);
         }
     }
 
@@ -175,28 +172,25 @@ public class CommandLineUserInterface {
      */
     private void printTotalResidentialMarketValuePerCapita(int zipCode) {
         int populationCount = populationProcessor.getPopulationsByZip(zipCode);
-        int total = 0;
-
-        if (populationCount > 0) {
-            total = (int) propertyValueProcessor.getTotalMarketValuePerCapita(zipCode, populationCount);
-        }
+        int total = (int) propertyValueProcessor.getTotalMarketValuePerCapita(zipCode, populationCount);
 
         System.out.printf("%d\n", total);
     }
 
     /**
-     * CUSTOM FUNCTION: Prints avg market value for zip code over average fine per capita
+     * CUSTOM FUNCTION: Prints market value per capita over average fine amount for each zip code
      */
-    private void printAverageMarketValueOverAverageFine(int zipCode) {
-        int populationCount = populationProcessor.getPopulationsByZip(zipCode);
-        double averageMarketValueOverAverageFine = 0.0;
+    private void printMarketValuePerCapitaOverAverageFine() {
+        for (Map.Entry<Integer, Integer> entry : populationProcessor.getPopulationsMap().entrySet()) {
+            int zipCode = entry.getKey();
+            int populationCount = entry.getValue();
 
-        if (populationCount > 0) {
-            double averageFine = parkingViolationProcessor.getAverageFinePerArea(zipCode);
-            averageMarketValueOverAverageFine = propertyValueProcessor.getAverageMarketValueOverAverageFine(zipCode, averageFine);
+            double averageFine = parkingViolationProcessor.getAverageFine(zipCode);
+            double marketValuePerCapitaOverAverageFine = propertyValueProcessor.getMarketValuePerCapitaOverAverageFine(
+                    zipCode, populationCount, averageFine);
+
+            System.out.printf("%d %04.4f\n", zipCode, marketValuePerCapitaOverAverageFine);
         }
-
-        System.out.printf("%04.4f\n", averageMarketValueOverAverageFine);
     }
 
     /**
