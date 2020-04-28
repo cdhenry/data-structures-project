@@ -129,7 +129,7 @@ public class CommandLineUserInterface {
         System.out.println("\t3 for the average residential market value");
         System.out.println("\t4 for the average residential total livable area");
         System.out.println("\t5 for the total residential market value per capita");
-        System.out.println("\t6 for average market value over average fine per capita");
+        System.out.println("\t6 for market value per cap over average fine");
     }
 
     /**
