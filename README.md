@@ -20,7 +20,7 @@ Our program also uses a data set of **property values** of houses and other resi
 
 <span style="text-decoration:underline;">Additional Feature:</span>
 
-Our additional feature calculates the average market value per capita and then divides it by the average fine per capita. This figure is an attempt to find some relationship between fines and market values per capita. We begin by obtaining the population count for the user entered zip code. For the average market value per capita, we use the average market value method previously defined in the assignment.  For average fine per capita, we obtain the total number of fines for a user specified zip code and divide by the population count for that zip code. Since these are the only two figures that comprise our calculation, we know dividing them will produce the correct answer.
+Our additional feature calculates the total market value per capita and then divides it by the average fine amount in that zip code. This figure is an attempt to find some relationship between fines and market values per capita. We do this for each zip code accounted for in the population file and display the answers in a table. For the total market value per capita, we use the total market value method previously defined in the assignment.  For average fine, we obtain the sum of all fines in a zip code and divide by the number of fines. Since these are the only two figures that comprise our calculation, we know dividing them will produce the correct answer.
 
 <span style="text-decoration:underline;">Data Structures:</span>
 
